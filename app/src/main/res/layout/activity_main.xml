@@ -63,49 +63,61 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
         </FrameLayout>
-
     </android.support.constraint.ConstraintLayout>
-
-
-
 </LinearLayout>
+
     <LinearLayout
         android:id="@+id/bottomsheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
         app:behavior_hideable="false"
         app:behavior_peekHeight="@dimen/peek_height"
-        android:orientation="vertical"
-        app:layout_behavior="@string/bottom_sheet_behavior"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        app:layout_behavior="@string/bottom_sheet_behavior">
+
         <FrameLayout
             android:id="@+id/bottomsheettop"
-            android:background="@color/colorBackgroundDark"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/peek_height">
+            android:layout_height="@dimen/peek_height"
+            android:background="@color/colorBackgroundDark">
 
             <TextView
+                android:id="@+id/tasks"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_margin="16dp"
-                android:id="@+id/tasks"
                 android:text="Tasks"
                 android:textColor="@color/colorGrey"
-                android:textSize="24sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:textSize="24sp" />
 
 
-            <ImageView
-                android:foreground="@drawable/ripple"
-                android:id="@+id/plus"
-                android:padding="16dp"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_gravity="center_vertical|right|end"
-                android:src="@drawable/plus" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/arrow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:tint="@color/colorGrey"
+                    android:src="@drawable/expandup" />
+
+                <ImageView
+                    android:id="@+id/plus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:foreground="?selectableItemBackgroundBorderless"
+                    android:padding="16dp"
+                    android:tint="@color/colorGrey"
+                    android:src="@drawable/materialplus" />
+            </LinearLayout>
 
         </FrameLayout>
 
-        <include
-            layout="@layout/bottomsheet"></include>
+        <include layout="@layout/bottomsheet"></include>
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

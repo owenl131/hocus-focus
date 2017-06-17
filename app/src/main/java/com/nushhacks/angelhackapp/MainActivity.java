@@ -13,14 +13,19 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.NotificationCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.nushhacks.angelhackapp.NotificationReader.NotificationHandler;
@@ -28,8 +33,11 @@ import com.nushhacks.angelhackapp.NotificationReader.NotificationListener;
 import com.nushhacks.angelhackapp.SpeechRecognizer.Recognizer;
 import com.nushhacks.angelhackapp.TextToSpeech.TTS;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,9 +50,35 @@ public class MainActivity extends AppCompatActivity {
     private static final float TEXT_TO = 1.2f;
     private int buttonState = 0;
     private Rect rect;
-    private View mInnerCircle;
-    private TextView mStartView;
+    private View mInnerCircle, mArrowView;
+    private TextView mStartView, mCurrentTaskView;
     private BottomSheetBehavior bottomSheetBehavior;
+    private RecyclerView recyclerView;
+    private String selectedTaskName = null;
+    public static List<Pair<String, Integer>> tasks = new ArrayList<>();
+
+
+    class BottomSheetViewHolder extends RecyclerView.ViewHolder {
+        protected TextView mTitleView, mDurationView;
+        protected View mRootView;
+        public BottomSheetViewHolder(View v) {
+            super(v);
+            mTitleView = (TextView) v.findViewById(R.id.title);
+            mTitleView.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/Dosis-Bold.ttf"));
+            mDurationView = (TextView) v.findViewById(R.id.duration);
+            mRootView = v;
+        }
+    }
+
+    public static String formatMinutes(int minutes) {
+        return minutes + " min";
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        tasks = TasksIO.getAllTasksNameAndDuration(this);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,15 +87,60 @@ public class MainActivity extends AppCompatActivity {
 
 		Typeface dosis = Typeface.createFromAsset(getAssets(), "fonts/Dosis-Bold.ttf");
 		Typeface cabin = Typeface.createFromAsset(getAssets(), "fonts/Cabin-Bold.ttf");
-		((TextView) findViewById(R.id.tasks)).setTypeface(dosis);
+        mCurrentTaskView = (TextView) findViewById(R.id.tasks);
+		mCurrentTaskView.setTypeface(dosis);
+        ((TextView) findViewById(R.id.t3)).setTypeface(dosis);
+
 		((TextView) findViewById(R.id.appname)).setTypeface(cabin);
 		((TextView) findViewById(R.id.start)).setTypeface(dosis);
         mInnerCircle = findViewById(R.id.ring1);
         mStartView = (TextView) findViewById(R.id.start);
+        mArrowView = findViewById(R.id.arrow);
+        recyclerView = (RecyclerView) findViewById(R.id.dustbin);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(new RecyclerView.Adapter<BottomSheetViewHolder>() {
+            @Override
+            public BottomSheetViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                return new BottomSheetViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_task, parent, false));
+            }
+
+            @Override
+            public void onBindViewHolder(BottomSheetViewHolder holder, int position) {
+                final Pair<String, Integer> pair = tasks.get(position);
+                holder.mTitleView.setText(pair.first);
+                holder.mDurationView.setText(formatMinutes(pair.second));
+                holder.mRootView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d("MainActivity", pair.first + " " + pair.second);
+                        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                        selectedTaskName = pair.first;
+                        mCurrentTaskView.setText(pair.first);
+                    }
+                });
+            }
+
+            @Override
+            public int getItemCount() {
+                return tasks.size();
+            }
+
+        });
 
         bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottomsheet));
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         bottomSheetBehavior.setHideable(false);
+        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                mArrowView.setRotation(180*slideOffset);
+            }
+        });
 
         findViewById(R.id.bottomsheettop).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -136,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
                 v.getTop() + (int) motionEvent.getY());
     }
 
-    // get tasks and schedule notifications
+    // get subtasks and schedule notifications
     private void setupTaskCheckpoints()
     {
         final ArrayList<Pair<String, Integer>> arr = TasksIO.getLastSubtasks(this);

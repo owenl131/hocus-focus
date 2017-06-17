@@ -193,7 +193,7 @@ public class BoostActivity extends AppCompatActivity {
 		// Do nothing
 	}
 
-	public String formatMillis(long millis) {
+	public static String formatMillis(long millis) {
 		return String.format("%02d:%02d",
 				TimeUnit.MILLISECONDS.toMinutes(millis) -
 						TimeUnit.MINUTES.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),

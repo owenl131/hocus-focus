@@ -1,9 +1,9 @@
 package com.nushhacks.angelhackapp;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,21 +11,17 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +30,7 @@ import java.util.List;
  */
 
 public class TasksActivity extends AppCompatActivity {
-    List<JSONObject> tasks = new ArrayList<>();
+    List<JSONObject> subtasks = new ArrayList<>();
     private RecyclerView recyclerView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,21 +40,48 @@ public class TasksActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.abl);
+        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
+                if (i == 0) {
+                    //expanded
+                } else if (Math.abs(i) >= appBarLayout.getTotalScrollRange()) {
+                    //collapsed
+                } else {
+                    //in between
+                    View extra = findViewById(R.id.extra);
+                    float normalised = (float)Math.abs(i) / appBarLayout.getTotalScrollRange();
+                    extra.setAlpha(1f-normalised);
+                }
+            }
+        });
+
         ((TextView) findViewById(R.id.addtask)).setTypeface(Typeface.createFromAsset(getAssets(), "fonts/Cabin-Bold.ttf"));
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setAdapter(new RecyclerView.Adapter<TaskViewHolder>() {
             @Override
             public TaskViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                return new TaskViewHolder(LayoutInflater.from(getApplicationContext()).inflate(R.layout.activity_tasks_list_inner, parent, false));
+                return new TaskViewHolder(LayoutInflater.from(TasksActivity.this).inflate(R.layout.activity_tasks_list_inner, parent, false));
             }
 
             @Override
-            public void onBindViewHolder(TaskViewHolder holder, int position) {
-                JSONObject jsonObject = tasks.get(position);
+            public void onBindViewHolder(TaskViewHolder holder, final int position) {
+                final JSONObject jsonObject = subtasks.get(position);
                 try {
                     holder.mDurationView.setText(Integer.toString(jsonObject.getInt("duration")));
-                    holder.mPlanView.setText(jsonObject.getString("name"));
+                    holder.mPlanView.setText(jsonObject.getString("plan"));
+                    holder.mCancelView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            subtasks.remove(jsonObject);
+                            notifyItemRemoved(position);
+                        }
+                    });
                 } catch (JSONException e){
                     e.printStackTrace();
                 }
@@ -66,7 +89,7 @@ public class TasksActivity extends AppCompatActivity {
 
             @Override
             public int getItemCount() {
-                return tasks.size();
+                return subtasks.size();
             }
         });
         //TODO: Test whether editing works
@@ -97,25 +120,39 @@ public class TasksActivity extends AppCompatActivity {
 
     class TaskViewHolder extends RecyclerView.ViewHolder {
         EditText mDurationView, mPlanView;
+        View mCancelView;
         public TaskViewHolder(View v) {
             super(v);
             mDurationView = (EditText) v.findViewById(R.id.dMinorDurText);
             mPlanView = (EditText) v.findViewById(R.id.dMinorPlanText);
+            mCancelView = v.findViewById(R.id.cancel);
         }
     }
 
-    //DONE implement for an X beside the particular Linearlayout (Should work not tried yet)
-    public void removeLayout(View view){
-        LinearLayout currentLayout = (LinearLayout)view.getParent();
-        LinearLayout currentLayoutParent = (LinearLayout)currentLayout.getParent();
-        currentLayoutParent.removeView(currentLayout);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.tick) {
+            Log.d("TaskActivity", "Save to file");
+            saveToFile(null);
+            return true;
+        } else if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void addNewSubtask(View view) throws JSONException{
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("plan", "");
         jsonObject.put("duration", 0);
-        tasks.add(jsonObject);
+        subtasks.add(jsonObject);
         recyclerView.getAdapter().notifyDataSetChanged();
     }
 
@@ -146,25 +183,20 @@ public class TasksActivity extends AppCompatActivity {
         JSONArray arr = new JSONArray();
 
         int durationSum = 0;
-
-        LinearLayout addedLayout = (LinearLayout) findViewById(R.id.added_layout);
-        for (int i = 1; i < (addedLayout.getChildCount()); i++) {
-            JSONObject tempObj = new JSONObject();
-            LinearLayout curLayout = (LinearLayout) addedLayout.getChildAt(i);
-            EditText etDur = (EditText) curLayout.findViewById(R.id.dMinorDurText);
-            EditText etPlan = (EditText) curLayout.findViewById(R.id.dMinorPlanText);
-            try {
-                int duration = Integer.parseInt(etDur.getText().toString());
-                tempObj.put("duration", duration);
-                durationSum += duration;
-                tempObj.put("plan", etPlan.getText().toString());
-                arr.put(tempObj);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (NumberFormatException e) {
-                ((EditText) findViewById(R.id.dText)).setError("Please enter a valid number.");
-                error = true;
-            }
+        for (int i = 0; i < subtasks.size(); i++) {
+            JSONObject tempObj = subtasks.get(i);
+//            try {
+//                int duration = Integer.parseInt(etDur.getText().toString());
+//                tempObj.put("duration", duration);
+//                durationSum += duration;
+//                tempObj.put("plan", etPlan.getText().toString());
+//                arr.put(tempObj);
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            } catch (NumberFormatException e) {
+//                ((EditText) findViewById(R.id.dText)).setError("Please enter a valid number.");
+//                error = true;
+//            }
         }
 
         if(totalDuration < durationSum){
