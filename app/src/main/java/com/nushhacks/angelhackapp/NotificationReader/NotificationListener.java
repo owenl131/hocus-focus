@@ -21,13 +21,6 @@ public class NotificationListener extends NotificationListenerService {
 	public void onCreate() {
 		super.onCreate();
 		context = getApplicationContext();
-
-		Log.i("Listener works", "Whats your problem");
-	}
-
-	@Override
-	public void onListenerConnected() {
-		Log.i("Listener Connected", "NICESAH");
 	}
 
 	/**
@@ -37,20 +30,17 @@ public class NotificationListener extends NotificationListenerService {
 	@Override
 	public void onNotificationPosted(StatusBarNotification notification) {
 		String packageName = notification.getPackageName();
-		String tickerText = notification.getNotification().tickerText.toString();
 		Bundle extras = notification.getNotification().extras;
 		String title = extras.getString("android.title");
 		String text = extras.getCharSequence("android.text").toString();
 
 		Log.i("Notification", "Posted");
 		Log.i("Package",packageName);
-		Log.i("Ticker",tickerText);
 		Log.i("Title",title);
 		Log.i("Text",text);
 
 		Intent broadcast = new Intent("Notification");
 		broadcast.putExtra("package", packageName);
-		broadcast.putExtra("ticker", tickerText);
 		broadcast.putExtra("title", title);
 		broadcast.putExtra("text", text);
 
@@ -66,14 +56,12 @@ public class NotificationListener extends NotificationListenerService {
 	@Override
 	public void onNotificationRemoved(StatusBarNotification notification) {
 		String packageName = notification.getPackageName();
-		String tickerText = notification.getNotification().tickerText.toString();
 		Bundle extras = notification.getNotification().extras;
 		String title = extras.getString("android.title");
 		String text = extras.getCharSequence("android.text").toString();
 
 		Log.i("Notification", "Removed");
 		Log.i("Package",packageName);
-		Log.i("Ticker",tickerText);
 		Log.i("Title",title);
 		Log.i("Text",text);
 	}

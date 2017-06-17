@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by danie on 17/6/2017.
@@ -17,13 +18,11 @@ public class NotificationHandler extends BroadcastReceiver {
 	 */
 	public class NotificationInfo {
 		public String packageName;
-		public String tickerText;
 		public String title;
 		public String text;
 
-		public NotificationInfo(String packageName, String tickerText, String title, String text) {
+		public NotificationInfo(String packageName, String title, String text) {
 			this.packageName = packageName;
-			this.tickerText = tickerText;
 			this.title = title;
 			this.text = text;
 		}
@@ -43,14 +42,18 @@ public class NotificationHandler extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		String packageName = intent.getStringExtra("package");
-		String tickerText = intent.getStringExtra("ticker");
 		String title = intent.getStringExtra("title");
 		String text = intent.getStringExtra("text");
-		NotificationInfo notificationInfo = new NotificationInfo(packageName, tickerText, title, text);
+		NotificationInfo notificationInfo = new NotificationInfo(packageName, title, text);
 		notifications.add(notificationInfo);
 	}
 
 	public ArrayList<NotificationInfo> getNotifications() {
-		return notifications;
+		ArrayList<NotificationInfo> res = new ArrayList<>();
+		for(NotificationInfo ni : notifications) {
+			res.add(new NotificationInfo(ni.packageName, ni.title, ni.text));
+		}
+		notifications.clear();
+		return res;
 	}
 }
