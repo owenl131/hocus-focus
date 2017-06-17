@@ -56,12 +56,27 @@
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tasks"
-        android:layout_marginLeft="16dp"
-        android:text="Tasks"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tasks"
+            android:layout_marginLeft="16dp"
+            android:text="Tasks"
+            android:textSize="24sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <ImageView
+            android:id="@+id/plus"
+            android:layout_gravity="right|end"
+            android:src="@color/colorBackgroundDark"
+            android:layout_width="64dp"
+            android:layout_height="64dp" />
+
+    </FrameLayout>
+
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
