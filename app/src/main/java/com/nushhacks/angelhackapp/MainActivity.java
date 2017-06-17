@@ -1,6 +1,8 @@
 package com.nushhacks.angelhackapp;
 
 
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -119,5 +121,10 @@ public class MainActivity extends AppCompatActivity {
             }
             elapsed += dur;
         }
+    }
+
+    private void animateButton(float from, float to) {
+        ValueAnimator objectAnimator = ValueAnimator.ofFloat(from, to);
+
     }
 }
