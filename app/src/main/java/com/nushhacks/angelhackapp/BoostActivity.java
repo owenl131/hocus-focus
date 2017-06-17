@@ -145,7 +145,7 @@ public class BoostActivity extends AppCompatActivity {
 						}
 						break;
 					default:
-						tts.Say("I don't know what you are saying.");
+						// tts.Say("I don't know what you are saying.");
 						break;
 				}
 			}
