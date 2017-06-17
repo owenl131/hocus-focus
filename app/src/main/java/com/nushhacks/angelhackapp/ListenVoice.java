@@ -3,6 +3,7 @@ package com.nushhacks.angelhackapp;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Handler;
 import android.os.Message;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
@@ -18,8 +19,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.nushhacks.angelhackapp.TextToSpeech.TTS;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -30,30 +34,31 @@ import edu.cmu.pocketsphinx.RecognitionListener;
 import edu.cmu.pocketsphinx.SpeechRecognizer;
 import edu.cmu.pocketsphinx.SpeechRecognizerSetup;
 
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.V;
-
 public class ListenVoice extends AppCompatActivity
 {
     TextToSpeech t1;
+    TTS t;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_listen_voice);
-        t1 = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+        /*t1 = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
                 if(status != TextToSpeech.ERROR) {
                     t1.setLanguage(Locale.UK);
                 }
             }
-        });
+        });*/
+        t = new TTS(this);
         ((Button)findViewById(R.id.voicebutton)).setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view)
             {
-                t1.speak(""+((EditText)findViewById(R.id.text)).getText(), TextToSpeech.QUEUE_FLUSH, null);
+                t.Say(""+((EditText)findViewById(R.id.text)).getText());
+                //t1.speak(""+((EditText)findViewById(R.id.text)).getText(), TextToSpeech.QUEUE_FLUSH, null);
                 if (false && Build.VERSION.SDK_INT >= 23)
                 {
                     Option option = new Option("hey", 0);
@@ -66,6 +71,18 @@ public class ListenVoice extends AppCompatActivity
 
         runRecognizerSetup();
         //startTrigger();
+
+        Handler h = new Handler();
+        boolean b = h.postDelayed(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                Log.d("voice2", "TIMEEE");
+            }
+        }, 1000*10);
+        if (!b)
+            Log.d("voice2", "problem");
     }
 
     private void startTrigger() {
@@ -101,7 +118,7 @@ public class ListenVoice extends AppCompatActivity
                 @Override
                 public void onResult(Hypothesis hypothesis)
                 {
-                    Log.d("voice", hypothesis.getHypstr());
+                    Log.d("voice2", hypothesis.getHypstr());
                 }
 
                 @Override

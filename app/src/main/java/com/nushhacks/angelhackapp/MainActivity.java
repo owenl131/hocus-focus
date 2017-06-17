@@ -1,6 +1,7 @@
 package com.nushhacks.angelhackapp;
 
 import android.content.IntentFilter;
+import android.os.Build;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 
@@ -38,13 +39,27 @@ public class MainActivity extends AppCompatActivity {
 		findViewById(R.id.mainButton).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				Intent intent = new Intent(MainActivity.this, BoostActivity.class);
-				ActivityOptions options = ActivityOptions
-						.makeSceneTransitionAnimation(MainActivity.this,
-								Pair.create(findViewById(R.id.ring), "ring"),
-								Pair.create(findViewById(R.id.ring1), "ring1"));
-				startActivity(intent, options.toBundle());
+                startClicked();
 			}
 		});
     }
+
+    private void startClicked()
+    {
+        Intent intent = new Intent(MainActivity.this, BoostActivity.class);
+        // get tasks
+        // schedule handlers
+        // start up the recogniser
+        if (Build.VERSION.SDK_INT >= 21) {
+            ActivityOptions options = ActivityOptions
+                    .makeSceneTransitionAnimation(MainActivity.this,
+                            Pair.create(findViewById(R.id.ring), "ring"),
+                            Pair.create(findViewById(R.id.ring1), "ring1"));
+            startActivity(intent, options.toBundle());
+        }
+        else {
+            startActivity(intent);
+        }
+    }
+
 }
