@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="main"><source path="C:\Users\Jeff Sieu\Documents\Projects\GitHub\AngelHackApp\models\src\main\shaders"/></dataSet><dataSet config="release"><source path="C:\Users\Jeff Sieu\Documents\Projects\GitHub\AngelHackApp\models\src\release\shaders"/></dataSet></merger>
+<merger version="3"><dataSet config="main"><source path="F:\GitRepo\AngelHack\angelhack\models\src\main\shaders"/></dataSet><dataSet config="release"><source path="F:\GitRepo\AngelHack\angelhack\models\src\release\shaders"/></dataSet></merger>

@@ -86,7 +86,12 @@ public class TasksIO {
         }*/
         JSONArray ja = getAllFromFile(aca);
 
-        ja.put(obj);
+        if(ja!=null) {
+            ja.put(obj);
+        }
+        else{
+            ja = new JSONArray();
+        }
 
         File curFile = new File(aca.getFilesDir().getAbsolutePath() + "/" + FILE_NAME + ".json");
 
@@ -151,6 +156,7 @@ public class TasksIO {
         return null;*/
 
         JSONArray ja = getAllFromFile(aca);
+        if(ja == null) return null;
         for(int i = 0; i < ja.length(); i++){
             try {
                 JSONObject jo = ja.getJSONObject(i);

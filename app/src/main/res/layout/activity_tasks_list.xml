@@ -9,7 +9,8 @@
 <LinearLayout android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="10dp">
     <GridLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -19,6 +20,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="10pt"
             android:text="Name:"/>
         <EditText
             android:layout_width="150dp"
@@ -30,22 +32,29 @@
             android:text=""/>
         <TextView
             android:layout_width="wrap_content"
+            android:textSize="10pt"
             android:layout_height="wrap_content"
             android:text="Duration:"/>
         <EditText
             android:layout_width="150dp"
             android:layout_height="match_parent"
             android:id="@+id/dText"
-            android:text="30"/>
+            android:text="30"
+            android:inputType="number"
+            android:textAlignment="textEnd"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="7pt"
             android:text=" minutes"/>
     </GridLayout>
     <TextView
         android:layout_width="wrap_content"
+        android:textSize="10pt"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:layout_height="wrap_content"
-        android:text="Plans"/>
+        android:text="Subtasks"/>
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -57,15 +66,19 @@
             android:id="@+id/added_layout">
         <LinearLayout
             android:layout_width="wrap_content"
+            android:layout_margin="5dp"
+            android:padding="5dp"
             android:layout_height="wrap_content">
             <TextView
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
+                android:textSize="7pt"
                 android:text="Duration"/>
             <TextView
                 android:layout_width="150dp"
+                android:textSize="7pt"
                 android:layout_height="wrap_content"
-                android:text="Plan"/>
+                android:text="Subtask Name"/>
 
             <!--<EditText
                 android:layout_width="100dp"
@@ -76,14 +89,20 @@
         </LinearLayout>
         </LinearLayout>
     </ScrollView>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Add"
-        android:onClick="addLayout"/>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Save"
-        android:onClick="saveToFile"/>
-    </LinearLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add"
+            android:onClick="addLayout"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save"
+            android:layout_alignParentRight="true"
+            android:onClick="saveToFile"/>
+    </RelativeLayout>
+
+</LinearLayout>
