@@ -1,5 +1,6 @@
 package com.nushhacks.angelhackapp;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.Pair;
@@ -39,7 +40,7 @@ public class TasksIO {
 
     public static final String FILE_NAME = "data.txt";
 
-    public static boolean checkNameExist(String name, AppCompatActivity aca){
+    public static boolean checkNameExist(String name, Context ctx){
         /*File[] curDir = aca.getFilesDir().listFiles();
         for (File file : curDir) {
             if (file.getName().equals(name + ".json")) return false;
@@ -47,7 +48,7 @@ public class TasksIO {
         return true;*/
 
         StringBuilder result = new StringBuilder();
-        File curFile = new File(aca.getFilesDir().getAbsolutePath() + "/" + FILE_NAME + ".json");
+        File curFile = new File(ctx.getFilesDir().getAbsolutePath() + "/" + FILE_NAME + ".json");
 
         try {
             InputStream inputStream = new FileInputStream(curFile);
@@ -69,7 +70,7 @@ public class TasksIO {
         return false;
     }
 
-    public static void writeToFile(JSONObject obj, AppCompatActivity aca) {
+    public static void writeToFile(JSONObject obj, Context ctx) {
         //File f = aca.getFilesDir();
         /*File curFile = new File(aca.getFilesDir().getAbsolutePath() + "/" + name + ".json");
 
@@ -84,7 +85,7 @@ public class TasksIO {
         } catch (IOException e) {
             e.printStackTrace();
         }*/
-        JSONArray ja = getAllFromFile(aca);
+        JSONArray ja = getAllFromFile(ctx);
 
         if(ja!=null) {
             ja.put(obj);
@@ -93,7 +94,7 @@ public class TasksIO {
             ja = new JSONArray();
         }
 
-        File curFile = new File(aca.getFilesDir().getAbsolutePath() + "/" + FILE_NAME + ".json");
+        File curFile = new File(ctx.getFilesDir().getAbsolutePath() + "/" + FILE_NAME + ".json");
 
         try {
             OutputStreamWriter outputStream = new OutputStreamWriter(new FileOutputStream(curFile));
@@ -108,10 +109,10 @@ public class TasksIO {
 
     }
 
-    public static JSONArray getAllFromFile(AppCompatActivity aca) {
+    public static JSONArray getAllFromFile(Context ctx) {
         //File f = aca.getFilesDir();
         StringBuilder result = new StringBuilder();
-        File curFile = new File(aca.getFilesDir().getAbsolutePath() + "/" + FILE_NAME + ".json");
+        File curFile = new File(ctx.getFilesDir().getAbsolutePath() + "/" + FILE_NAME + ".json");
 
         try {
             InputStream inputStream = new FileInputStream(curFile);
@@ -132,7 +133,7 @@ public class TasksIO {
         return null;
     }
 
-    public static JSONObject getFromFile(String name, AppCompatActivity aca) {
+    public static JSONObject getFromFile(String name, Context ctx) {
         //File f = aca.getFilesDir();
         /*StringBuilder result = new StringBuilder();
         File curFile = new File(aca.getFilesDir().getAbsolutePath() + "/" + FILE_NAME + ".json");
@@ -155,7 +156,7 @@ public class TasksIO {
         }
         return null;*/
 
-        JSONArray ja = getAllFromFile(aca);
+        JSONArray ja = getAllFromFile(ctx);
         if(ja == null) return null;
         for(int i = 0; i < ja.length(); i++){
             try {
@@ -171,7 +172,7 @@ public class TasksIO {
         return null;
     }
 
-    public static ArrayList<Pair<String,Integer>> getAllTasksNameAndDuration(AppCompatActivity aca) {
+    public static ArrayList<Pair<String,Integer>> getAllTasksNameAndDuration(Context ctx) {
         /*File[] curDir = aca.getFilesDir().listFiles();
         ArrayList<Pair<String,Integer>> list = new ArrayList<>();
         for (File file : curDir) {
@@ -184,7 +185,7 @@ public class TasksIO {
         }
         return (Pair<String,Integer>[]) list.toArray();*/
         ArrayList<Pair<String,Integer>> list = new ArrayList<>();
-        JSONArray ja = getAllFromFile(aca);
+        JSONArray ja = getAllFromFile(ctx);
         if (ja == null)
             return list;
         Log.d("tasksio", ja.toString());

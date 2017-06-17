@@ -5,21 +5,20 @@
     android:layout_margin="5dp"
     android:padding="5dp">
     <EditText
-        android:layout_width="150dp"
+        android:layout_width="125dp"
         android:layout_height="wrap_content"
         android:inputType="number"
         android:textSize="7pt"
         android:id="@+id/dMinorDurText"/>
     <EditText
-        android:layout_width="150dp"
+        android:layout_width="125dp"
         android:layout_height="wrap_content"
         android:textSize="7pt"
         android:id="@+id/dMinorPlanText" />
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="20dp"
         android:layout_height="wrap_content"
         android:text="X"
         android:onClick="removeLayout"
-        android:background="@color/colorBackground"
-        android:textSize="7pt"/>
+        android:background="@color/colorBackground"/>
 </LinearLayout>
