@@ -49,11 +49,10 @@ public class NotificationHandler extends BroadcastReceiver {
 	}
 
 	public ArrayList<NotificationInfo> getNotifications() {
-		ArrayList<NotificationInfo> res = new ArrayList<>();
-		for(NotificationInfo ni : notifications) {
-			res.add(new NotificationInfo(ni.packageName, ni.title, ni.text));
-		}
+		return notifications;
+	}
+
+	public void clearNotifications() {
 		notifications.clear();
-		return res;
 	}
 }
