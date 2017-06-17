@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.content.LocalBroadcastManager;
@@ -40,18 +41,19 @@ import java.util.concurrent.TimeUnit;
  */
 
 public class BoostActivity extends AppCompatActivity {
+
 	private TextView mTimerView;
     private View mGiveUpView;
     private ArcProgress progress;
 	private long previousMillis = -1;
 
-	final int duration = 5000;
-	int tick = 1;
-	int updateTick = 500;
-
 	TTS tts;
 	NotificationHandler notificationHandler;
 	Recognizer recognizer;
+
+	private int duration = 5000;
+	private int tick = 1;
+	private int updateTick = 500;
 
 	@Override
 	public void onEnterAnimationComplete() {
@@ -155,7 +157,7 @@ public class BoostActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_boost);
-
+		duration = getIntent().getIntExtra("Duration", 30);
 		progress = (ArcProgress) findViewById(R.id.progress);
 		mTimerView = (TextView) findViewById(R.id.timerView);
         mGiveUpView = findViewById(R.id.giveup);
@@ -178,9 +180,7 @@ public class BoostActivity extends AppCompatActivity {
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event)  {
-		if (Integer.parseInt(android.os.Build.VERSION.SDK) > 5
-				&& keyCode == KeyEvent.KEYCODE_BACK
-				&& event.getRepeatCount() == 0) {
+		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
 			onBackPressed();
 			return true;
 		}

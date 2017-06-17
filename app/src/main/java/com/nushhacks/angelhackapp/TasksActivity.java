@@ -1,6 +1,7 @@
 package com.nushhacks.angelhackapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -67,12 +68,36 @@ public class TasksActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_tasks_list);
 
+        //TODO: Test whether editing works
+        Intent intent = getIntent();
+        boolean newTask = intent.getBooleanExtra("new_task", false);
+        if(newTask){
+            Bundle b = intent.getExtras();
+            JSONObject jo = (JSONObject)b.get("json_obj");
+
+            try {
+                if(jo==null) return;
+                ((EditText)findViewById(R.id.nText)).setText(jo.getString("name"));
+                ((EditText)findViewById(R.id.dText)).setText("" + jo.getInt("duration"));
+
+                JSONArray ja = jo.getJSONArray("subtasks");
+                if(ja==null) return;
+                for(int i = 0; i < ja.length(); i++){
+                    JSONObject joSub = ja.getJSONObject(i);
+                    LinearLayout subtaskLL = addNewSubtask();
+                    ((EditText)subtaskLL.findViewById(R.id.dMinorDurText)).setText(joSub.getInt("duration"));
+                    ((EditText)subtaskLL.findViewById(R.id.dMinorPlanText)).setText(joSub.getString("plan"));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
 
        //((EditText)findViewById(R.id.sDateText)).setText("hrllo");
 
     }
 
-    //TODO: implement for an X beside the particular Linearlayout (Should work not tried yet)
+    //DONE implement for an X beside the particular Linearlayout (Should work not tried yet)
     public void removeLayout(View view){
         LinearLayout currentLayout = (LinearLayout)view.getParent();
         LinearLayout currentLayoutParent = (LinearLayout)currentLayout.getParent();
@@ -88,12 +113,18 @@ public class TasksActivity extends AppCompatActivity {
             EditText etPlan = childLayout.findViewById(R.id.dMinorPlanText);
 
             if (!etDur.getText().toString().trim().equalsIgnoreCase("") && !etPlan.getText().toString().trim().equalsIgnoreCase("")) {
-                getLayoutInflater().inflate(R.layout.activity_tasks_list_inner, addedLayout);
+                addNewSubtask();
             }
         }
         else{
-            getLayoutInflater().inflate(R.layout.activity_tasks_list_inner, addedLayout);
+            addNewSubtask();
         }
+
+    }
+
+    public LinearLayout addNewSubtask(){
+        LinearLayout addedLayout = (LinearLayout) findViewById(R.id.added_layout);
+        return (LinearLayout)getLayoutInflater().inflate(R.layout.activity_tasks_list_inner, addedLayout);
     }
 
     public void saveToFile(View view) {
