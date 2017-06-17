@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 cmudict-en-us.dict
 en-us-ptm/README
 en-us-ptm/feat.params
@@ -7,4 +8,15 @@ en-us-ptm/noisedict
 en-us-ptm/sendump
 en-us-ptm/transition_matrices
 en-us-ptm/variances
+=======
+cmudict-en-us.dict
+en-us-ptm/README
+en-us-ptm/feat.params
+en-us-ptm/mdef
+en-us-ptm/means
+en-us-ptm/noisedict
+en-us-ptm/sendump
+en-us-ptm/transition_matrices
+en-us-ptm/variances
+>>>>>>> b1416e9bcab60ff0a7badb27341bc5c265b0b3a1
 menu.gram

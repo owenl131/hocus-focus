@@ -19,6 +19,9 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity android:name=".TasksActivity">
+
+        </activity>
         <activity android:name=".ListenVoice">
         </activity>
         <service android:name=".NotificationReader.NotificationListener"

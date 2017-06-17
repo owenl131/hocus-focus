@@ -1,6 +1,8 @@
 package com.nushhacks.angelhackapp;
 
 
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.ActivityOptions;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -8,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,6 +20,7 @@ import android.support.v7.app.NotificationCompat;
 import android.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
@@ -34,6 +38,15 @@ public class MainActivity extends AppCompatActivity {
     NotificationHandler notificationHandler;
     TTS tts;
 
+    private static final float CIRCLE_FROM = 1.0f;
+    private static final float CIRCLE_TO = 0.9f;
+    private static final float TEXT_FROM = 1.0f;
+    private static final float TEXT_TO = 1.2f;
+    private int buttonState = 0;
+    private Rect rect;
+    private View mInnerCircle;
+    private TextView mStartView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,14 +61,42 @@ public class MainActivity extends AppCompatActivity {
 		((TextView) findViewById(R.id.tasks)).setTypeface(dosis);
 		((TextView) findViewById(R.id.appname)).setTypeface(cabin);
 		((TextView) findViewById(R.id.start)).setTypeface(dosis);
+        mInnerCircle = findViewById(R.id.ring1);
+        mStartView = (TextView) findViewById(R.id.start);
 
-		findViewById(R.id.mainButton).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-                startClicked();
-			}
-		});
-        tts = new TTS(getApplicationContext());
+        findViewById(R.id.mainButton).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        rect = new Rect(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
+                        if (buttonState == 0)
+                            enterButton();
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        if (!inButton(v, motionEvent)) {
+                            if (buttonState == 1)
+                                exitButton();
+                        } else if (buttonState == 1 && inButton(v, motionEvent))
+                            startClicked();
+                        return true;
+                    case MotionEvent.ACTION_MOVE:
+                        if (buttonState == 0 && inButton(v, motionEvent))
+                            enterButton();
+                        else if (buttonState == 1 && !inButton(v, motionEvent))
+                            exitButton();
+
+                }
+                return false;
+            }
+        });
+        findViewById(R.id.plus).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), TasksActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void startClicked()
@@ -73,6 +114,12 @@ public class MainActivity extends AppCompatActivity {
         else {
             startActivity(intent);
         }
+    }
+
+    private boolean inButton(View v, MotionEvent motionEvent) {
+        return rect != null
+                && rect.contains(v.getLeft() + (int) motionEvent.getX(),
+                v.getTop() + (int) motionEvent.getY());
     }
 
     private void setupSpeechListener()
@@ -117,7 +164,8 @@ public class MainActivity extends AppCompatActivity {
     // get tasks and schedule notifications
     private void setupTaskCheckpoints()
     {
-        final ArrayList<Pair<String, Integer> > arr = TasksIO.getAllTasksNameAndDuration(this);
+        final ArrayList<Pair<String, Integer>> arr = TasksIO.getLastSubtasks(this);
+        //TasksIO.getAllTasksNameAndDuration(this);
         final TTS tts = new TTS(this);
         Handler handler = new Handler();
         long elapsed = 0;
@@ -126,6 +174,7 @@ public class MainActivity extends AppCompatActivity {
         {
             final String name = arr.get(i).first;
             final long dur = arr.get(i).second;
+            Log.d("mainmain", name + "," + dur);
             if (i != 0) {
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -155,5 +204,30 @@ public class MainActivity extends AppCompatActivity {
             }
             elapsed += dur;
         }
+    }
+
+    private void animateButton(float from, float to) {
+        ValueAnimator objectAnimator = ValueAnimator.ofFloat(from, to);
+        objectAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                float val = (float) valueAnimator.getAnimatedValue();
+                mInnerCircle.setScaleX(CIRCLE_FROM + val*(CIRCLE_TO - CIRCLE_FROM));
+                mInnerCircle.setScaleY(CIRCLE_FROM + val*(CIRCLE_TO - CIRCLE_FROM));
+                mStartView.setScaleX(TEXT_FROM + val*(TEXT_TO - TEXT_FROM));
+                mStartView.setScaleY(TEXT_FROM + val*(TEXT_TO - TEXT_FROM));
+            }
+        });
+        objectAnimator.start();
+    }
+
+    private void enterButton() {
+        buttonState = 1;
+        animateButton(0, 1);
+    }
+
+    private void exitButton() {
+        buttonState = 0;
+        animateButton(1, 0);
     }
 }
