@@ -21,6 +21,19 @@ import java.util.ArrayList;
  */
 
 public class TasksIO {
+    /* Files in the format of:
+        {
+            "name":,
+            "duration":,
+            "subtasks":[
+                {
+                    "duration":"",
+                    "plan":""
+                }
+            ]
+        }
+     */
+
     public static boolean checkNameExist(String name, AppCompatActivity aca) {
         File[] curDir = aca.getFilesDir().listFiles();
         for (File file : curDir) {

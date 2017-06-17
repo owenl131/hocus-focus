@@ -72,6 +72,13 @@ public class TasksActivity extends AppCompatActivity {
 
     }
 
+    //TODO: implement for an X beside the particular Linearlayout (Should work not tried yet)
+    public void removeLayout(View view){
+        LinearLayout currentLayout = (LinearLayout)view.getParent();
+        LinearLayout currentLayoutParent = (LinearLayout)currentLayout.getParent();
+        currentLayoutParent.removeView(currentLayout);
+    }
+
     public void addLayout(View view){
         LinearLayout addedLayout = (LinearLayout) findViewById(R.id.added_layout);
 
