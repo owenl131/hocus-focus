@@ -84,8 +84,8 @@ public class TasksActivity extends AppCompatActivity {
 
         if(addedLayout.getChildCount()!=1) {
             LinearLayout childLayout = (LinearLayout) addedLayout.getChildAt(addedLayout.getChildCount() - 1);
-            EditText etDur = childLayout.findViewById(R.id.dMinorDurText);
-            EditText etPlan = childLayout.findViewById(R.id.dMinorPlanText);
+            EditText etDur = (EditText) childLayout.findViewById(R.id.dMinorDurText);
+            EditText etPlan = (EditText) childLayout.findViewById(R.id.dMinorPlanText);
 
             if (!etDur.getText().toString().trim().equalsIgnoreCase("") && !etPlan.getText().toString().trim().equalsIgnoreCase("")) {
                 getLayoutInflater().inflate(R.layout.activity_tasks_list_inner, addedLayout);
@@ -128,8 +128,8 @@ public class TasksActivity extends AppCompatActivity {
         for (int i = 1; i < (addedLayout.getChildCount()); i++) {
             JSONObject tempObj = new JSONObject();
             LinearLayout curLayout = (LinearLayout) addedLayout.getChildAt(i);
-            EditText etDur = curLayout.findViewById(R.id.dMinorDurText);
-            EditText etPlan = curLayout.findViewById(R.id.dMinorPlanText);
+            EditText etDur = (EditText) curLayout.findViewById(R.id.dMinorDurText);
+            EditText etPlan = (EditText) curLayout.findViewById(R.id.dMinorPlanText);
             try {
                 int duration = Integer.parseInt(etDur.getText().toString());
                 tempObj.put("duration", duration);

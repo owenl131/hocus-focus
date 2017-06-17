@@ -11,6 +11,7 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Pair;
 import android.support.v7.app.AppCompatActivity;
@@ -39,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private Rect rect;
     private View mInnerCircle;
     private TextView mStartView;
+    private BottomSheetBehavior bottomSheetBehavior;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,10 @@ public class MainActivity extends AppCompatActivity {
 		((TextView) findViewById(R.id.start)).setTypeface(dosis);
         mInnerCircle = findViewById(R.id.ring1);
         mStartView = (TextView) findViewById(R.id.start);
+
+        bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottomsheet));
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        bottomSheetBehavior.setHideable(false);
 
         findViewById(R.id.mainButton).setOnTouchListener(new View.OnTouchListener() {
             @Override
