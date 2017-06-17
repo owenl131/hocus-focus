@@ -25,7 +25,7 @@ public class Recognizer implements RecognitionListener {
 	private SpeechRecognizer recognizer;
 
 	/* Keyword we are looking for to activate menu */
-	private static final String KEYPHRASE = "no what";
+	private static final String KEYPHRASE = "ok google";//"no what";
 
 	SpeechProcessor speechProcessor;
 
@@ -78,9 +78,7 @@ public class Recognizer implements RecognitionListener {
 		recognizer = SpeechRecognizerSetup.defaultSetup()
 				.setAcousticModel(new File(assetsDir, "en-us-ptm"))
 				.setDictionary(new File(assetsDir, "cmudict-en-us.dict"))
-
 				.setRawLogDir(assetsDir) // To disable logging of raw audio comment out this call (takes a lot of space on the device)
-
 				.getRecognizer();
 		recognizer.addListener(this);
 
@@ -119,7 +117,7 @@ public class Recognizer implements RecognitionListener {
 		if(hypothesis == null)
 			return;
 		String text = hypothesis.getHypstr();
-		speechProcessor.f(text);
+		//speechProcessor.f(text);
 
 		if(recognizer.getSearchName().equals("wakeup") && text.equals(KEYPHRASE)) {
 			switchSpeech("menu");

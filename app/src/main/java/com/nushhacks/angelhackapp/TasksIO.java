@@ -1,6 +1,7 @@
 package com.nushhacks.angelhackapp;
 
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.util.Pair;
 
 import org.json.JSONArray;
@@ -164,7 +165,7 @@ public class TasksIO {
         return null;
     }
 
-    public static Pair<String,Integer>[] getAllTasksNameAndDuration(AppCompatActivity aca) {
+    public static ArrayList<Pair<String,Integer>> getAllTasksNameAndDuration(AppCompatActivity aca) {
         /*File[] curDir = aca.getFilesDir().listFiles();
         ArrayList<Pair<String,Integer>> list = new ArrayList<>();
         for (File file : curDir) {
@@ -178,6 +179,14 @@ public class TasksIO {
         return (Pair<String,Integer>[]) list.toArray();*/
         ArrayList<Pair<String,Integer>> list = new ArrayList<>();
         JSONArray ja = getAllFromFile(aca);
+        if (ja == null)
+            return list;
+        Log.d("tasksio", ja.toString());
+        try
+        {
+            Log.d("taskio", ja.getString(0));
+        }catch (Exception e)
+        {}
         for(int i = 0; i < ja.length(); i++){
             try {
                 JSONObject jo = ja.getJSONObject(i);
@@ -188,6 +197,6 @@ public class TasksIO {
             }
 
         }
-        return (Pair<String,Integer>[]) list.toArray();
+        return list;
     }
 }
