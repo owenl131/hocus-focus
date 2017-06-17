@@ -44,9 +44,9 @@ public class TTS
     public void Say(String s)
     {
         if (Build.VERSION.SDK_INT >= 21)
-            t.speak(s, TextToSpeech.QUEUE_FLUSH, null, "");
+            t.speak(s, TextToSpeech.QUEUE_ADD, null, "");
         else
-            t.speak(s, TextToSpeech.QUEUE_FLUSH, null);
+            t.speak(s, TextToSpeech.QUEUE_ADD, null);
         /*new Handler().postDelayed(new Runnable(){
             @Override
             public void run()

@@ -97,6 +97,7 @@ public class TasksIO {
         File curFile = new File(ctx.getFilesDir().getAbsolutePath() + "/" + FILE_NAME + ".json");
 
         try {
+            Log.d("mainmain", ja.toString());
             OutputStreamWriter outputStream = new OutputStreamWriter(new FileOutputStream(curFile));
             outputStream.write(ja.toString());
             outputStream.close();
@@ -133,7 +134,7 @@ public class TasksIO {
         return null;
     }
 
-    public static JSONObject getFromFile(String name, Context ctx) {
+    public static JSONObject getFromFile(String name, AppCompatActivity aca) {
         //File f = aca.getFilesDir();
         /*StringBuilder result = new StringBuilder();
         File curFile = new File(aca.getFilesDir().getAbsolutePath() + "/" + FILE_NAME + ".json");
@@ -156,7 +157,7 @@ public class TasksIO {
         }
         return null;*/
 
-        JSONArray ja = getAllFromFile(ctx);
+        JSONArray ja = getAllFromFile(aca);
         if(ja == null) return null;
         for(int i = 0; i < ja.length(); i++){
             try {
@@ -172,28 +173,33 @@ public class TasksIO {
         return null;
     }
 
-    public static ArrayList<Pair<String,Integer>> getAllTasksNameAndDuration(Context ctx) {
-        /*File[] curDir = aca.getFilesDir().listFiles();
+    public static ArrayList<Pair<String, Integer>> getLastSubtasks(Context ctx)
+    {
         ArrayList<Pair<String,Integer>> list = new ArrayList<>();
-        for (File file : curDir) {
-            try {
-                Pair<String, Integer> curPair = Pair.create(file.getName().split(".json")[0], getFromFile(file.getName(), aca).getInt("duration"));
+        JSONArray ja = getAllFromFile(ctx);
+        if (ja == null) return list;
+        try {
+            JSONObject obj = ja.getJSONObject(0);
+            Log.d("tasksio", obj.toString());
+            JSONArray arr = obj.getJSONArray("subtasks");
+            Log.d("tasksio", arr.toString());
+            for(int i = 0; i < arr.length(); i++){
+                JSONObject jo = arr.getJSONObject(i);
+                Pair<String, Integer> curPair = Pair.create(jo.getString("plan"), jo.getInt("duration"));
                 list.add(curPair);
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
+            return list;
         }
-        return (Pair<String,Integer>[]) list.toArray();*/
+        catch (Exception e)
+        {}
+        return null;
+    }
+
+    public static ArrayList<Pair<String,Integer>> getAllTasksNameAndDuration(Context ctx) {
         ArrayList<Pair<String,Integer>> list = new ArrayList<>();
         JSONArray ja = getAllFromFile(ctx);
         if (ja == null)
             return list;
-        Log.d("tasksio", ja.toString());
-        try
-        {
-            Log.d("taskio", ja.getString(0));
-        }catch (Exception e)
-        {}
         for(int i = 0; i < ja.length(); i++){
             try {
                 JSONObject jo = ja.getJSONObject(i);

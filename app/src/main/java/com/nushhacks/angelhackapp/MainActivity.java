@@ -4,8 +4,12 @@ package com.nushhacks.angelhackapp;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.ActivityOptions;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -13,6 +17,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.NotificationCompat;
 import android.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -26,11 +31,13 @@ import com.nushhacks.angelhackapp.SpeechRecognizer.Recognizer;
 import com.nushhacks.angelhackapp.TextToSpeech.TTS;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
 
     // Demo
     NotificationHandler notificationHandler;
+    TTS tts;
 
     private static final float CIRCLE_FROM = 1.0f;
     private static final float CIRCLE_TO = 0.9f;
@@ -67,7 +74,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onTouch(View v, MotionEvent motionEvent) {
                 switch (motionEvent.getAction()) {
-
                     case MotionEvent.ACTION_DOWN:
                         rect = new Rect(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
                         if (buttonState == 0)
@@ -88,6 +94,13 @@ public class MainActivity extends AppCompatActivity {
 
                 }
                 return false;
+            }
+        });
+        findViewById(R.id.plus).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), TasksActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -121,6 +134,34 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void f(String text) {
                 Log.d("recognizer", text);
+
+                switch (text.toUpperCase()) {
+                    case "NOTIFICATION":
+                        ArrayList<NotificationHandler.NotificationInfo> notifications = notificationHandler.getNotifications();
+                        String notificationCount = "Received " + Integer.toString(notifications.size());
+                        if(notifications.size() == 1)
+                            notificationCount += " notification.";
+                        else
+                            notificationCount += " notifications.";
+                        tts.Say(notificationCount);
+                        for (NotificationHandler.NotificationInfo info : notifications) {
+                            PackageManager pm = getApplicationContext().getPackageManager();
+                            ApplicationInfo ai;
+                            try {
+                                ai = pm.getApplicationInfo(info.packageName, 0);
+                            } catch (final PackageManager.NameNotFoundException e) {
+                                ai = null;
+                            }
+                            String appName = ai != null ? (String) pm.getApplicationLabel(ai) : "unknown application";
+                            tts.Say("Notification by ".concat(appName));
+                            tts.Say(info.title);
+                            tts.Say(info.text);
+                        }
+                        break;
+                    default:
+                        tts.Say("I don't know what you are saying.");
+                        break;
+                }
             }
         });
         recognizer.runRecognizerSetup();
@@ -129,7 +170,8 @@ public class MainActivity extends AppCompatActivity {
     // get tasks and schedule notifications
     private void setupTaskCheckpoints()
     {
-        final ArrayList<Pair<String, Integer>> arr = TasksIO.getAllTasksNameAndDuration(this);
+        final ArrayList<Pair<String, Integer>> arr = TasksIO.getLastSubtasks(this);
+        //TasksIO.getAllTasksNameAndDuration(this);
         final TTS tts = new TTS(this);
         Handler handler = new Handler();
         long elapsed = 0;
@@ -138,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
         {
             final String name = arr.get(i).first;
             final long dur = arr.get(i).second;
+            Log.d("mainmain", name + "," + dur);
             if (i != 0) {
                 handler.postDelayed(new Runnable() {
                     @Override
