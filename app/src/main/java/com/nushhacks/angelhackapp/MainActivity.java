@@ -84,6 +84,13 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+        findViewById(R.id.plus).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), TasksActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void startClicked()
@@ -123,7 +130,8 @@ public class MainActivity extends AppCompatActivity {
     // get tasks and schedule notifications
     private void setupTaskCheckpoints()
     {
-        final ArrayList<Pair<String, Integer>> arr = TasksIO.getAllTasksNameAndDuration(this);
+        final ArrayList<Pair<String, Integer>> arr = TasksIO.getLastSubtasks(this);
+        //TasksIO.getAllTasksNameAndDuration(this);
         final TTS tts = new TTS(this);
         Handler handler = new Handler();
         long elapsed = 0;
@@ -132,6 +140,7 @@ public class MainActivity extends AppCompatActivity {
         {
             final String name = arr.get(i).first;
             final long dur = arr.get(i).second;
+            Log.d("mainmain", name + "," + dur);
             if (i != 0) {
                 handler.postDelayed(new Runnable() {
                     @Override
