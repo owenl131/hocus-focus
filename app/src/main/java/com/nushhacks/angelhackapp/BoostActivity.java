@@ -3,14 +3,18 @@ package com.nushhacks.angelhackapp;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Transformation;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.lzyzsd.circleprogress.ArcProgress;
 
@@ -59,6 +63,23 @@ public class BoostActivity extends AppCompatActivity {
 
 		final ArcProgress progress = (ArcProgress) findViewById(R.id.progress);
 		mTimerView = (TextView) findViewById(R.id.timerView);
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event)  {
+		if (Integer.parseInt(android.os.Build.VERSION.SDK) > 5
+				&& keyCode == KeyEvent.KEYCODE_BACK
+				&& event.getRepeatCount() == 0) {
+			onBackPressed();
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+
+	@Override
+	public void onBackPressed() {
+		// Do nothing
+
 	}
 
 }
