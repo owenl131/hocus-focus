@@ -1,19 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBackground"
     tools:context="com.nushhacks.angelhackapp.MainActivity">
 
     <TextView
+        android:id="@+id/appname"
+        android:textSize="32sp"
+        android:layout_margin="16dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:text="@string/app_name"
+        android:layout_height="wrap_content"/>
+    <LinearLayout
+        android:paddingTop="64dp"
+        android:padding="64dp"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-</android.support.constraint.ConstraintLayout>
+        <FrameLayout
+            android:id="@+id/mainButton"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/ring"
+                android:transitionName="ring"
+                android:layout_gravity="center"
+                android:src="@drawable/mainbutton"
+                android:layout_width="200dp"
+                android:layout_height="200dp"/>
+            <ImageView
+                android:id="@+id/ring1"
+                android:tint="@color/colorBackground"
+                android:transitionName="ring1"
+                android:layout_gravity="center"
+                android:src="@drawable/mainbutton"
+                android:layout_width="192dp"
+                android:layout_height="192dp"/>
+            <TextView
+                android:id="@+id/start"
+                android:layout_gravity="center"
+                android:textColor="@color/colorMainButton"
+                android:text="START"
+                android:textSize="28sp"
+                android:textStyle="italic|bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tasks"
+        android:layout_marginLeft="16dp"
+        android:text="Tasks"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:padding="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:text="Complete APP"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:layout_alignParentRight="true"
+                android:text="6:00 PM"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+</LinearLayout>
