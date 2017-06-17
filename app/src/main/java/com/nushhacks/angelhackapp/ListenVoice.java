@@ -73,10 +73,10 @@ public class ListenVoice extends AppCompatActivity
         String assetsDir = "models";
         try
         {
-            getAssets();
+            File f = new Assets(this).syncAssets();
             SpeechRecognizer speechRecognizer = SpeechRecognizerSetup.defaultSetup()
-                    //.setAcousticModel(new File("en-us-ptm"))
-                    .setDictionary(new File("cmudict-en-us.dict"))
+                    .setAcousticModel(new File(f, "en-us-ptm"))
+                    .setDictionary(new File(f, "cmudict-en-us.dict"))
                     .getRecognizer();
             speechRecognizer.addListener(new RecognitionListener()
             {
