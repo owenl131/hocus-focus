@@ -58,6 +58,7 @@ public class TTS
                 }
             }
         }, 1000);*/
+        while(t.isSpeaking()){}
 
     }
 
