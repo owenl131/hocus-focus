@@ -4,8 +4,10 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
@@ -18,58 +20,50 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by User on 6/17/2017.
  */
 
 public class TasksActivity extends AppCompatActivity {
-
+    List<JSONObject> tasks = new ArrayList<>();
+    private RecyclerView recyclerView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        /*StringBuilder result = new StringBuilder();
-
-        try {
-            InputStream inputStream = openFileInput("hi.json");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                result.append(line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            OutputStreamWriter outputStream = null;
-            outputStream = new OutputStreamWriter(openFileOutput("hi.json", Context.MODE_PRIVATE));
-            outputStream.write("hi");
-            outputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        //OutputStreamWriter outputStream = new OutputStreamWriter(context.openFileOutput("hi.json", Context.MODE_PRIVATE);
-
-        try {
-            InputStream inputStream = openFileInput("hi.json");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                result.append(line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        Log.d("hi", result.toString());*/
-
         setContentView(R.layout.activity_tasks_list);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView.setAdapter(new RecyclerView.Adapter<TaskViewHolder>() {
+            @Override
+            public TaskViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                return null;
+            }
 
+            @Override
+            public void onBindViewHolder(TaskViewHolder holder, int position) {
+                holder.mDurationView.setText();
+            }
+
+            @Override
+            public int getItemCount() {
+                return tasks.size();
+            }
+
+        });
 
        //((EditText)findViewById(R.id.sDateText)).setText("hrllo");
 
+    }
+
+    class TaskViewHolder extends RecyclerView.ViewHolder {
+        EditText mDurationView, mPlanView;
+        public TaskViewHolder(View itemView) {
+            super(itemView);
+            mDurationView = (EditText) childLayout.findViewById(R.id.dMinorDurText);
+            mPlanView = (EditText) childLayout.findViewById(R.id.dMinorPlanText);
+        }
     }
 
     //TODO: implement for an X beside the particular Linearlayout (Should work not tried yet)

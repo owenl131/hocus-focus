@@ -70,6 +70,16 @@ public class MainActivity extends AppCompatActivity {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         bottomSheetBehavior.setHideable(false);
 
+        findViewById(R.id.bottomsheettop).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED)
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                else if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED)
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+        });
+
         findViewById(R.id.mainButton).setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent motionEvent) {
