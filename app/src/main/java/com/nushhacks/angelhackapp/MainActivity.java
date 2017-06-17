@@ -13,6 +13,7 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.NotificationCompat;
 import android.util.Pair;
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private Rect rect;
     private View mInnerCircle;
     private TextView mStartView;
+    private BottomSheetBehavior bottomSheetBehavior;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,20 @@ public class MainActivity extends AppCompatActivity {
 		((TextView) findViewById(R.id.start)).setTypeface(dosis);
         mInnerCircle = findViewById(R.id.ring1);
         mStartView = (TextView) findViewById(R.id.start);
+
+        bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottomsheet));
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        bottomSheetBehavior.setHideable(false);
+
+        findViewById(R.id.bottomsheettop).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED)
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                else if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED)
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+        });
 
         findViewById(R.id.mainButton).setOnTouchListener(new View.OnTouchListener() {
             @Override

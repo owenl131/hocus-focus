@@ -160,6 +160,7 @@ public class BoostActivity extends AppCompatActivity {
 		duration = getIntent().getIntExtra("Duration", 30);
 		progress = (ArcProgress) findViewById(R.id.progress);
 		mTimerView = (TextView) findViewById(R.id.timerView);
+        mTimerView.setText(formatMillis(duration));
         mGiveUpView = findViewById(R.id.giveup);
         mTimerView.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/AnonymousPro-Bold.ttf"));
         mGiveUpView.setOnClickListener(new View.OnClickListener() {

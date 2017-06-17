@@ -2,13 +2,20 @@ package com.nushhacks.angelhackapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,55 +26,49 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by User on 6/17/2017.
  */
 
 public class TasksActivity extends AppCompatActivity {
-
+    List<JSONObject> tasks = new ArrayList<>();
+    private RecyclerView recyclerView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        /*StringBuilder result = new StringBuilder();
-
-        try {
-            InputStream inputStream = openFileInput("hi.json");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                result.append(line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            OutputStreamWriter outputStream = null;
-            outputStream = new OutputStreamWriter(openFileOutput("hi.json", Context.MODE_PRIVATE));
-            outputStream.write("hi");
-            outputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        //OutputStreamWriter outputStream = new OutputStreamWriter(context.openFileOutput("hi.json", Context.MODE_PRIVATE);
-
-        try {
-            InputStream inputStream = openFileInput("hi.json");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                result.append(line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        Log.d("hi", result.toString());*/
-
         setContentView(R.layout.activity_tasks_list);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        ((TextView) findViewById(R.id.addtask)).setTypeface(Typeface.createFromAsset(getAssets(), "fonts/Cabin-Bold.ttf"));
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        recyclerView.setAdapter(new RecyclerView.Adapter<TaskViewHolder>() {
+            @Override
+            public TaskViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                return new TaskViewHolder(LayoutInflater.from(getApplicationContext()).inflate(R.layout.activity_tasks_list_inner, parent, false));
+            }
+
+            @Override
+            public void onBindViewHolder(TaskViewHolder holder, int position) {
+                JSONObject jsonObject = tasks.get(position);
+                try {
+                    holder.mDurationView.setText(Integer.toString(jsonObject.getInt("duration")));
+                    holder.mPlanView.setText(jsonObject.getString("name"));
+                } catch (JSONException e){
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public int getItemCount() {
+                return tasks.size();
+            }
+        });
         //TODO: Test whether editing works
         Intent intent = getIntent();
         boolean newTask = intent.getBooleanExtra("new_task", false);
@@ -77,24 +78,30 @@ public class TasksActivity extends AppCompatActivity {
 
             try {
                 if(jo==null) return;
-                ((EditText)findViewById(R.id.nText)).setText(jo.getString("name"));
+                ((EditText)findViewById(R.id.nText)).setText(jo.getString("plan"));
                 ((EditText)findViewById(R.id.dText)).setText("" + jo.getInt("duration"));
 
                 JSONArray ja = jo.getJSONArray("subtasks");
                 if(ja==null) return;
                 for(int i = 0; i < ja.length(); i++){
                     JSONObject joSub = ja.getJSONObject(i);
-                    LinearLayout subtaskLL = addNewSubtask();
-                    ((EditText)subtaskLL.findViewById(R.id.dMinorDurText)).setText(joSub.getInt("duration"));
-                    ((EditText)subtaskLL.findViewById(R.id.dMinorPlanText)).setText(joSub.getString("plan"));
+//                    LinearLayout subtaskLL = addNewSubtask(null);
+//                    ((EditText)subtaskLL.findViewById(R.id.dMinorDurText)).setText(joSub.getInt("duration"));
+//                    ((EditText)subtaskLL.findViewById(R.id.dMinorPlanText)).setText(joSub.getString("plan"));
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
+    }
 
-       //((EditText)findViewById(R.id.sDateText)).setText("hrllo");
-
+    class TaskViewHolder extends RecyclerView.ViewHolder {
+        EditText mDurationView, mPlanView;
+        public TaskViewHolder(View v) {
+            super(v);
+            mDurationView = (EditText) v.findViewById(R.id.dMinorDurText);
+            mPlanView = (EditText) v.findViewById(R.id.dMinorPlanText);
+        }
     }
 
     //DONE implement for an X beside the particular Linearlayout (Should work not tried yet)
@@ -104,27 +111,12 @@ public class TasksActivity extends AppCompatActivity {
         currentLayoutParent.removeView(currentLayout);
     }
 
-    public void addLayout(View view){
-        LinearLayout addedLayout = (LinearLayout) findViewById(R.id.added_layout);
-
-        if(addedLayout.getChildCount()!=1) {
-            LinearLayout childLayout = (LinearLayout) addedLayout.getChildAt(addedLayout.getChildCount() - 1);
-            EditText etDur = childLayout.findViewById(R.id.dMinorDurText);
-            EditText etPlan = childLayout.findViewById(R.id.dMinorPlanText);
-
-            if (!etDur.getText().toString().trim().equalsIgnoreCase("") && !etPlan.getText().toString().trim().equalsIgnoreCase("")) {
-                addNewSubtask();
-            }
-        }
-        else{
-            addNewSubtask();
-        }
-
-    }
-
-    public LinearLayout addNewSubtask(){
-        LinearLayout addedLayout = (LinearLayout) findViewById(R.id.added_layout);
-        return (LinearLayout)getLayoutInflater().inflate(R.layout.activity_tasks_list_inner, addedLayout);
+    public void addNewSubtask(View view) throws JSONException{
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("plan", "");
+        jsonObject.put("duration", 0);
+        tasks.add(jsonObject);
+        recyclerView.getAdapter().notifyDataSetChanged();
     }
 
     public void saveToFile(View view) {
@@ -159,8 +151,8 @@ public class TasksActivity extends AppCompatActivity {
         for (int i = 1; i < (addedLayout.getChildCount()); i++) {
             JSONObject tempObj = new JSONObject();
             LinearLayout curLayout = (LinearLayout) addedLayout.getChildAt(i);
-            EditText etDur = curLayout.findViewById(R.id.dMinorDurText);
-            EditText etPlan = curLayout.findViewById(R.id.dMinorPlanText);
+            EditText etDur = (EditText) curLayout.findViewById(R.id.dMinorDurText);
+            EditText etPlan = (EditText) curLayout.findViewById(R.id.dMinorPlanText);
             try {
                 int duration = Integer.parseInt(etDur.getText().toString());
                 tempObj.put("duration", duration);
