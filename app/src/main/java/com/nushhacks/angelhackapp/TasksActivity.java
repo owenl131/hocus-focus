@@ -163,7 +163,7 @@ public class TasksActivity extends AppCompatActivity {
         }
 
         if (!error){
-            TasksIO.writeToFile(obj, name, this);
+            TasksIO.writeToFile(obj, this);
             finish();
         }
         /*File f = getFilesDir();
