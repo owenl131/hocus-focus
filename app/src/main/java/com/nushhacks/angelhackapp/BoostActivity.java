@@ -7,6 +7,7 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
@@ -104,7 +105,7 @@ public class BoostActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_boost);
-		duration = savedInstanceState.getInt("Duration");
+		duration = getIntent().getIntExtra("Duration", 30);
 		progress = (ArcProgress) findViewById(R.id.progress);
 		mTimerView = (TextView) findViewById(R.id.timerView);
         mGiveUpView = findViewById(R.id.giveup);
@@ -121,9 +122,7 @@ public class BoostActivity extends AppCompatActivity {
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event)  {
-		if (Integer.parseInt(android.os.Build.VERSION.SDK) > 5
-				&& keyCode == KeyEvent.KEYCODE_BACK
-				&& event.getRepeatCount() == 0) {
+		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
 			onBackPressed();
 			return true;
 		}

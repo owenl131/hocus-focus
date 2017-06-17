@@ -109,12 +109,11 @@ public class MainActivity extends AppCompatActivity {
                             Pair.create(findViewById(R.id.ring), "ring"),
                             Pair.create(findViewById(R.id.ring1), "ring1"));
             Bundle bundle = options.toBundle();
-            bundle.putInt("Duration", 1000);
-            startActivity(intent, options.toBundle());
+            intent.putExtra("Duration", 1000);
+            startActivity(intent, bundle);
         }
         else {
-            Bundle bundle = new Bundle();
-            bundle.putInt("Duration", 1000);
+            intent.putExtra("Duration", 1000);
             startActivity(intent);
         }
     }
