@@ -46,6 +46,7 @@ public class NotificationListener extends NotificationListenerService {
 
 		LocalBroadcastManager.getInstance(context).sendBroadcast(broadcast);
 	}
+	
 
 	/**
 	 * I just leave this here because it's forced to be overriden
