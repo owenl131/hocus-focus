@@ -34,7 +34,6 @@ import java.util.Arrays;
 public class MainActivity extends AppCompatActivity {
 
     // Demo
-    NotificationHandler notificationHandler;
     TTS tts;
 
     private static final float CIRCLE_FROM = 1.0f;
@@ -51,10 +50,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        notificationHandler = new NotificationHandler();
-		LocalBroadcastManager.getInstance(this).registerReceiver(notificationHandler, new IntentFilter("Notification"));
-		startService(new Intent(this, NotificationListener.class));
 
 		Typeface dosis = Typeface.createFromAsset(getAssets(), "fonts/Dosis-Bold.ttf");
 		Typeface cabin = Typeface.createFromAsset(getAssets(), "fonts/Cabin-Bold.ttf");
@@ -112,13 +107,14 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        tts = new TTS(getApplicationContext());
     }
 
     private void startClicked()
     {
         Intent intent = new Intent(MainActivity.this, BoostActivity.class);
         setupTaskCheckpoints();
-        setupSpeechListener();
         if (Build.VERSION.SDK_INT >= 21) {
             ActivityOptions options = ActivityOptions
                     .makeSceneTransitionAnimation(MainActivity.this,
@@ -138,45 +134,6 @@ public class MainActivity extends AppCompatActivity {
         return rect != null
                 && rect.contains(v.getLeft() + (int) motionEvent.getX(),
                 v.getTop() + (int) motionEvent.getY());
-    }
-
-    private void setupSpeechListener()
-    {
-        Recognizer recognizer = new Recognizer(getApplicationContext(), new Recognizer.SpeechProcessor() {
-            @Override
-            public void f(String text) {
-                Log.d("recognizer", text);
-
-                switch (text.toUpperCase()) {
-                    case "NOTIFICATION":
-                        ArrayList<NotificationHandler.NotificationInfo> notifications = notificationHandler.getNotifications();
-                        String notificationCount = "Received " + Integer.toString(notifications.size());
-                        if(notifications.size() == 1)
-                            notificationCount += " notification.";
-                        else
-                            notificationCount += " notifications.";
-                        tts.Say(notificationCount);
-                        for (NotificationHandler.NotificationInfo info : notifications) {
-                            PackageManager pm = getApplicationContext().getPackageManager();
-                            ApplicationInfo ai;
-                            try {
-                                ai = pm.getApplicationInfo(info.packageName, 0);
-                            } catch (final PackageManager.NameNotFoundException e) {
-                                ai = null;
-                            }
-                            String appName = ai != null ? (String) pm.getApplicationLabel(ai) : "unknown application";
-                            tts.Say("Notification by ".concat(appName));
-                            tts.Say(info.title);
-                            tts.Say(info.text);
-                        }
-                        break;
-                    default:
-                        tts.Say("I don't know what you are saying.");
-                        break;
-                }
-            }
-        });
-        recognizer.runRecognizerSetup();
     }
 
     // get tasks and schedule notifications

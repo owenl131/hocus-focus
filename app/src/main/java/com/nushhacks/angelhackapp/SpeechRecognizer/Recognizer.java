@@ -4,9 +4,11 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.nushhacks.angelhackapp.ListenVoice;
+import com.nushhacks.angelhackapp.TextToSpeech.TTS;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,12 +29,18 @@ public class Recognizer implements RecognitionListener {
 	/* Keyword we are looking for to activate menu */
 	private static final String KEYPHRASE = "ok google";//"no what";
 
+	private String currentSearchName = "wakeup";
+
 	SpeechProcessor speechProcessor;
+	TTS tts;
+
+	boolean firstCall = true;
 
 	Context context;
 	public Recognizer(Context context, SpeechProcessor speechProcessor) {
 		this.context = context;
 		this.speechProcessor = speechProcessor;
+		this.tts = new TTS(context);
 	}
 
 	/**
@@ -98,17 +106,22 @@ public class Recognizer implements RecognitionListener {
 
 	@Override
 	public void onEndOfSpeech() {
-		switchSpeech("wakeup");
+		recognizer.stop();
 	}
 
 	public void switchSpeech(String searchName) {
-		recognizer.stop();
+		if(firstCall) {
+			Log.i("Current Text", "I am ready");
+			tts.Say("I am ready");
+			firstCall = false;
+		}
 		if(searchName.equals("wakeup")) {
+			Log.i("Current Text", "wakeup");
 			recognizer.startListening(searchName);
 		}
 		else {
-			// if the user says nowhat, let him give an instruction with a timeout
-			recognizer.startListening(searchName, 10000);
+			Log.i("Current Text", "menu");
+			recognizer.startListening(searchName, 2000);
 		}
 	}
 
@@ -117,19 +130,26 @@ public class Recognizer implements RecognitionListener {
 		if(hypothesis == null)
 			return;
 		String text = hypothesis.getHypstr();
+		Log.d("Current Partial", text);
 		//speechProcessor.f(text);
-
-		if(recognizer.getSearchName().equals("wakeup") && text.equals(KEYPHRASE)) {
-			switchSpeech("menu");
-		}
 	}
 
 	@Override
 	public void onResult(Hypothesis hypothesis) {
-		if(hypothesis == null)
+		if(hypothesis == null) {
+			switchSpeech("wakeup");
 			return;
+		}
 		String text = hypothesis.getHypstr();
-		speechProcessor.f(text);
+		Log.i("Current Text", text);
+
+		if(recognizer.getSearchName().equals("wakeup") && text.contains(KEYPHRASE)) {
+			Log.i("Current Text", "Tell me what you want");
+			tts.Say("Tell me what you want");
+		} else if (recognizer.getSearchName().equals("menu")) {
+			speechProcessor.f(text);
+		}
+		switchSpeech("menu");
 	}
 
 	@Override
@@ -139,7 +159,8 @@ public class Recognizer implements RecognitionListener {
 
 	@Override
 	public void onTimeout() {
-
+		Log.i("Current Text", "Timeout");
+		switchSpeech("wakeup");
 	}
 
 	public void cleanup() {
