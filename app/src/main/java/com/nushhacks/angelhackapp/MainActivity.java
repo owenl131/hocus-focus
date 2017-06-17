@@ -1,5 +1,11 @@
 package com.nushhacks.angelhackapp;
 
+import android.content.IntentFilter;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AppCompatActivity;
+
+import com.nushhacks.angelhackapp.NotificationReader.NotificationHandler;
+import com.nushhacks.angelhackapp.NotificationReader.NotificationListener;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -11,10 +17,18 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+    // Demo
+    NotificationHandler notificationHandler;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        notificationHandler = new NotificationHandler();
+		LocalBroadcastManager.getInstance(this).registerReceiver(notificationHandler, new IntentFilter("Notification"));
+		startService(new Intent(this, NotificationListener.class));
+
 		Typeface dosis = Typeface.createFromAsset(getAssets(), "fonts/Dosis-Bold.ttf");
 		Typeface cabin = Typeface.createFromAsset(getAssets(), "fonts/Cabin-Bold.ttf");
 		((TextView) findViewById(R.id.tasks)).setTypeface(dosis);
@@ -32,5 +46,5 @@ public class MainActivity extends AppCompatActivity {
 				startActivity(intent, options.toBundle());
 			}
 		});
-	}
+    }
 }
