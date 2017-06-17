@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <EditText
         android:hint="Duration"
@@ -8,14 +9,12 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:inputType="number"
-        android:textSize="7pt"
         android:id="@+id/dMinorDurText"/>
     <EditText
         android:hint="Plan"
         android:layout_weight="1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textSize="7pt"
         android:id="@+id/dMinorPlanText" />
     <ImageView
         android:padding="16dp"
@@ -23,6 +22,5 @@
         android:layout_height="wrap_content"
         android:tint="@android:color/white"
         android:src="@drawable/close"
-        android:onClick="removeLayout"
-        android:background="@color/colorBackground"/>
+        android:onClick="removeLayout"/>
 </LinearLayout>

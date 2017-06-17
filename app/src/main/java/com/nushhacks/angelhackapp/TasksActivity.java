@@ -1,15 +1,21 @@
 package com.nushhacks.angelhackapp;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,60 +40,83 @@ public class TasksActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tasks_list);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        ((TextView) findViewById(R.id.addtask)).setTypeface(Typeface.createFromAsset(getAssets(), "fonts/Cabin-Bold.ttf"));
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         recyclerView.setAdapter(new RecyclerView.Adapter<TaskViewHolder>() {
             @Override
             public TaskViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                return null;
+                return new TaskViewHolder(LayoutInflater.from(getApplicationContext()).inflate(R.layout.activity_tasks_list_inner, parent, false));
             }
 
             @Override
             public void onBindViewHolder(TaskViewHolder holder, int position) {
-                holder.mDurationView.setText();
+                JSONObject jsonObject = tasks.get(position);
+                try {
+                    holder.mDurationView.setText(Integer.toString(jsonObject.getInt("duration")));
+                    holder.mPlanView.setText(jsonObject.getString("name"));
+                } catch (JSONException e){
+                    e.printStackTrace();
+                }
             }
 
             @Override
             public int getItemCount() {
                 return tasks.size();
             }
-
         });
+        //TODO: Test whether editing works
+        Intent intent = getIntent();
+        boolean newTask = intent.getBooleanExtra("new_task", false);
+        if(newTask){
+            Bundle b = intent.getExtras();
+            JSONObject jo = (JSONObject)b.get("json_obj");
 
-       //((EditText)findViewById(R.id.sDateText)).setText("hrllo");
+            try {
+                if(jo==null) return;
+                ((EditText)findViewById(R.id.nText)).setText(jo.getString("plan"));
+                ((EditText)findViewById(R.id.dText)).setText("" + jo.getInt("duration"));
 
+                JSONArray ja = jo.getJSONArray("subtasks");
+                if(ja==null) return;
+                for(int i = 0; i < ja.length(); i++){
+                    JSONObject joSub = ja.getJSONObject(i);
+//                    LinearLayout subtaskLL = addNewSubtask(null);
+//                    ((EditText)subtaskLL.findViewById(R.id.dMinorDurText)).setText(joSub.getInt("duration"));
+//                    ((EditText)subtaskLL.findViewById(R.id.dMinorPlanText)).setText(joSub.getString("plan"));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     class TaskViewHolder extends RecyclerView.ViewHolder {
         EditText mDurationView, mPlanView;
-        public TaskViewHolder(View itemView) {
-            super(itemView);
-            mDurationView = (EditText) childLayout.findViewById(R.id.dMinorDurText);
-            mPlanView = (EditText) childLayout.findViewById(R.id.dMinorPlanText);
+        public TaskViewHolder(View v) {
+            super(v);
+            mDurationView = (EditText) v.findViewById(R.id.dMinorDurText);
+            mPlanView = (EditText) v.findViewById(R.id.dMinorPlanText);
         }
     }
 
-    //TODO: implement for an X beside the particular Linearlayout (Should work not tried yet)
+    //DONE implement for an X beside the particular Linearlayout (Should work not tried yet)
     public void removeLayout(View view){
         LinearLayout currentLayout = (LinearLayout)view.getParent();
         LinearLayout currentLayoutParent = (LinearLayout)currentLayout.getParent();
         currentLayoutParent.removeView(currentLayout);
     }
 
-    public void addLayout(View view){
-        LinearLayout addedLayout = (LinearLayout) findViewById(R.id.added_layout);
-
-        if(addedLayout.getChildCount()!=1) {
-            LinearLayout childLayout = (LinearLayout) addedLayout.getChildAt(addedLayout.getChildCount() - 1);
-            EditText etDur = (EditText) childLayout.findViewById(R.id.dMinorDurText);
-            EditText etPlan = (EditText) childLayout.findViewById(R.id.dMinorPlanText);
-
-            if (!etDur.getText().toString().trim().equalsIgnoreCase("") && !etPlan.getText().toString().trim().equalsIgnoreCase("")) {
-                getLayoutInflater().inflate(R.layout.activity_tasks_list_inner, addedLayout);
-            }
-        }
-        else{
-            getLayoutInflater().inflate(R.layout.activity_tasks_list_inner, addedLayout);
-        }
+    public void addNewSubtask(View view) throws JSONException{
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("plan", "");
+        jsonObject.put("duration", 0);
+        tasks.add(jsonObject);
+        recyclerView.getAdapter().notifyDataSetChanged();
     }
 
     public void saveToFile(View view) {

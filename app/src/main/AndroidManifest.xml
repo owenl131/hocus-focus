@@ -20,7 +20,8 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".TasksActivity">
+        <activity android:name=".TasksActivity"
+            android:theme="@style/AppThemeActionBar">
 
         </activity>
         <activity android:name=".ListenVoice">
