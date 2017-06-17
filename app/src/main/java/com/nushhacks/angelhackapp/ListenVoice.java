@@ -79,7 +79,12 @@ public class ListenVoice extends AppCompatActivity
             }
         });
 
-		recognizer = new Recognizer(getApplicationContext());
+		recognizer = new Recognizer(getApplicationContext(), new Recognizer.SpeechProcessor() {
+			@Override
+			public void f(String text) {
+				// idk la u do smth here
+			}
+		});
 
 		/* Speech recognition */
 		// Check if user has given permission to record audio, if not request first and return out of function
