@@ -1,7 +1,5 @@
 package com.nushhacks.angelhackapp;
 
-
-import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.ActivityOptions;
 import android.app.NotificationManager;
@@ -77,8 +75,9 @@ public class MainActivity extends AppCompatActivity {
                         if (!inButton(v, motionEvent)) {
                             if (buttonState == 1)
                                 exitButton();
-                        } else if (buttonState == 1 && inButton(v, motionEvent))
+                        } else if (buttonState == 1 && inButton(v, motionEvent)) {
                             startClicked();
+                        }
                         return true;
                     case MotionEvent.ACTION_MOVE:
                         if (buttonState == 0 && inButton(v, motionEvent))
@@ -109,9 +108,13 @@ public class MainActivity extends AppCompatActivity {
                     .makeSceneTransitionAnimation(MainActivity.this,
                             Pair.create(findViewById(R.id.ring), "ring"),
                             Pair.create(findViewById(R.id.ring1), "ring1"));
+            Bundle bundle = options.toBundle();
+            bundle.putInt("Duration", 1000);
             startActivity(intent, options.toBundle());
         }
         else {
+            Bundle bundle = new Bundle();
+            bundle.putInt("Duration", 1000);
             startActivity(intent);
         }
     }
@@ -165,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
     private void setupTaskCheckpoints()
     {
         final ArrayList<Pair<String, Integer>> arr = TasksIO.getLastSubtasks(this);
+        if (arr == null) return;
         //TasksIO.getAllTasksNameAndDuration(this);
         final TTS tts = new TTS(this);
         Handler handler = new Handler();
