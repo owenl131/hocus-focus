@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.nushhacks.angelhackapp.NotificationReader.NotificationHandler;
 import com.nushhacks.angelhackapp.NotificationReader.NotificationListener;
+import com.nushhacks.angelhackapp.SpeechRecognizer.Recognizer;
 import com.nushhacks.angelhackapp.TextToSpeech.TTS;
 
 import android.app.ActivityOptions;
@@ -15,6 +16,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.widget.TextView;
@@ -70,13 +72,19 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupSpeechListener()
     {
-        // TODO add in
+        Recognizer recognizer = new Recognizer(getApplicationContext(), new Recognizer.SpeechProcessor() {
+            @Override
+            public void f(String text) {
+                Log.d("recognizer", text);
+            }
+        });
+        recognizer.runRecognizerSetup();
     }
 
     // get tasks and schedule notifications
     private void setupTaskCheckpoints()
     {
-        final ArrayList<Pair<String, Long>> arr = new ArrayList<>(); //TODO get data from TaskIO
+        final ArrayList<Pair<String, Integer>> arr = TasksIO.getAllTasksNameAndDuration(this);
         final TTS tts = new TTS(this);
         Handler handler = new Handler();
         long elapsed = 0;

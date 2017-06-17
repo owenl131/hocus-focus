@@ -2,4 +2,4 @@
 
 grammar menu;
 
-public <item> = notification | time now | time elapsed | updates | messages;
+public <item> = notification | updates | messages | time now | time passed | time left;
