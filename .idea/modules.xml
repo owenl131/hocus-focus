@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/angelhack.iml" filepath="$PROJECT_DIR$/angelhack.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/models/models.iml" filepath="$PROJECT_DIR$/models/models.iml" />
+      <module fileurl="file://$PROJECT_DIR$/models/models.iml" filepath="$PROJECT_DIR$/models/models.iml" />
       <module fileurl="file://$PROJECT_DIR$/pocketsphinx-android-5prealpha-release/pocketsphinx-android-5prealpha-release.iml" filepath="$PROJECT_DIR$/pocketsphinx-android-5prealpha-release/pocketsphinx-android-5prealpha-release.iml" />
     </modules>
   </component>
