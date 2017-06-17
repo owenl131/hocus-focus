@@ -2,11 +2,14 @@ package com.nushhacks.angelhackapp;
 
 import android.content.IntentFilter;
 import android.os.Build;
+import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 
 import com.nushhacks.angelhackapp.NotificationReader.NotificationHandler;
 import com.nushhacks.angelhackapp.NotificationReader.NotificationListener;
+import com.nushhacks.angelhackapp.TextToSpeech.TTS;
+
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -15,6 +18,10 @@ import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+
+import static android.R.attr.x;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -47,9 +54,8 @@ public class MainActivity extends AppCompatActivity {
     private void startClicked()
     {
         Intent intent = new Intent(MainActivity.this, BoostActivity.class);
-        // get tasks
-        // schedule handlers
-        // start up the recogniser
+        setupTaskCheckpoints();
+        setupSpeechListener();
         if (Build.VERSION.SDK_INT >= 21) {
             ActivityOptions options = ActivityOptions
                     .makeSceneTransitionAnimation(MainActivity.this,
@@ -59,6 +65,54 @@ public class MainActivity extends AppCompatActivity {
         }
         else {
             startActivity(intent);
+        }
+    }
+
+    private void setupSpeechListener()
+    {
+        // TODO add in
+    }
+
+    // get tasks and schedule notifications
+    private void setupTaskCheckpoints()
+    {
+        final ArrayList<Pair<String, Long>> arr = new ArrayList<>(); //TODO get data from TaskIO
+        final TTS tts = new TTS(this);
+        Handler handler = new Handler();
+        long elapsed = 0;
+        long minToMs = 60*1000;
+        for (int i = 0; i < arr.size(); i++)
+        {
+            final String name = arr.get(i).first;
+            final long dur = arr.get(i).second;
+            if (i != 0) {
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        tts.Say("Time to start " + name + ".");
+                    }
+                }, minToMs*elapsed);
+            }
+            if (i == arr.size() - 1) {
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        tts.Say("You're almost done! Only " + dur + " minutes left.");
+                    }
+                }, (minToMs*elapsed + minToMs*dur*9/10));
+            }
+            else {
+                final String nextName = arr.get(i+1).first;
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        tts.Say("You should be wrapping up " + name +
+                                " and moving on to " + nextName +
+                                " soon. Just " + dur + " minutes left on " + name + ".");
+                    }
+                }, (minToMs*elapsed + minToMs*dur*9/10));
+            }
+            elapsed += dur;
         }
     }
 
