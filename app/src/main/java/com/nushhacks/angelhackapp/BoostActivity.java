@@ -6,10 +6,15 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -20,7 +25,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.lzyzsd.circleprogress.ArcProgress;
+import com.nushhacks.angelhackapp.NotificationReader.NotificationHandler;
+import com.nushhacks.angelhackapp.NotificationReader.NotificationListener;
+import com.nushhacks.angelhackapp.SpeechRecognizer.Recognizer;
+import com.nushhacks.angelhackapp.TextToSpeech.TTS;
 
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -38,6 +48,11 @@ public class BoostActivity extends AppCompatActivity {
 	final int duration = 5000;
 	int tick = 1;
 	int updateTick = 500;
+
+	TTS tts;
+	NotificationHandler notificationHandler;
+	Recognizer recognizer;
+
 	@Override
 	public void onEnterAnimationComplete() {
 		super.onEnterAnimationComplete();
@@ -95,7 +110,45 @@ public class BoostActivity extends AppCompatActivity {
 			}
 		});
 		anim.start();
+	}
 
+	private void setupSpeechListener()
+	{
+		recognizer = new Recognizer(getApplicationContext(), new Recognizer.SpeechProcessor() {
+			@Override
+			public void f(String text) {
+				Log.d("recognizer", text);
+
+				switch (text.toUpperCase()) {
+					case "NOTIFICATION":
+						ArrayList<NotificationHandler.NotificationInfo> notifications = notificationHandler.getNotifications();
+						String notificationCount = "Received " + Integer.toString(notifications.size());
+						if(notifications.size() == 1)
+							notificationCount += " notification.";
+						else
+							notificationCount += " notifications.";
+						tts.Say(notificationCount);
+						for (NotificationHandler.NotificationInfo info : notifications) {
+							PackageManager pm = getApplicationContext().getPackageManager();
+							ApplicationInfo ai;
+							try {
+								ai = pm.getApplicationInfo(info.packageName, 0);
+							} catch (final PackageManager.NameNotFoundException e) {
+								ai = null;
+							}
+							String appName = ai != null ? (String) pm.getApplicationLabel(ai) : "unknown application";
+							tts.Say("Notification by ".concat(appName));
+							tts.Say(info.title);
+							tts.Say(info.text);
+						}
+						break;
+					default:
+						tts.Say("I don't know what you are saying.");
+						break;
+				}
+			}
+		});
+		recognizer.runRecognizerSetup();
 	}
 
 	@Override
@@ -114,6 +167,13 @@ public class BoostActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+		notificationHandler = new NotificationHandler();
+		LocalBroadcastManager.getInstance(this).registerReceiver(notificationHandler, new IntentFilter("Notification"));
+		startService(new Intent(this, NotificationListener.class));
+
+		tts = new TTS(getApplicationContext());
+		setupSpeechListener();
 	}
 
 	@Override
@@ -138,6 +198,12 @@ public class BoostActivity extends AppCompatActivity {
 						TimeUnit.MINUTES.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
 				TimeUnit.MILLISECONDS.toSeconds(millis) -
 						TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		recognizer.cleanup();
 	}
 
 }

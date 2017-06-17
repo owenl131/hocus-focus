@@ -4,9 +4,11 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.nushhacks.angelhackapp.ListenVoice;
+import com.nushhacks.angelhackapp.TextToSpeech.TTS;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,12 +29,16 @@ public class Recognizer implements RecognitionListener {
 	/* Keyword we are looking for to activate menu */
 	private static final String KEYPHRASE = "ok google";//"no what";
 
+	private String currentSearchName = "wakeup";
+
 	SpeechProcessor speechProcessor;
+	TTS tts;
 
 	Context context;
 	public Recognizer(Context context, SpeechProcessor speechProcessor) {
 		this.context = context;
 		this.speechProcessor = speechProcessor;
+		this.tts = new TTS(context);
 	}
 
 	/**
@@ -59,6 +65,7 @@ public class Recognizer implements RecognitionListener {
 				if (result != null) {
 					Toast.makeText(context, "Failed to init recongnizer " + result, Toast.LENGTH_SHORT).show();
 				} else {
+					tts.Say("I am ready");
 					switchSpeech("wakeup");
 				}
 			}
@@ -98,17 +105,15 @@ public class Recognizer implements RecognitionListener {
 
 	@Override
 	public void onEndOfSpeech() {
-		switchSpeech("wakeup");
+		recognizer.stop();
 	}
 
 	public void switchSpeech(String searchName) {
-		recognizer.stop();
 		if(searchName.equals("wakeup")) {
 			recognizer.startListening(searchName);
 		}
 		else {
-			// if the user says nowhat, let him give an instruction with a timeout
-			recognizer.startListening(searchName, 10000);
+			recognizer.startListening(searchName, 5000);
 		}
 	}
 
@@ -118,18 +123,24 @@ public class Recognizer implements RecognitionListener {
 			return;
 		String text = hypothesis.getHypstr();
 		//speechProcessor.f(text);
-
-		if(recognizer.getSearchName().equals("wakeup") && text.equals(KEYPHRASE)) {
-			switchSpeech("menu");
-		}
 	}
 
 	@Override
 	public void onResult(Hypothesis hypothesis) {
-		if(hypothesis == null)
+		if(hypothesis == null) {
+			switchSpeech("wakeup");
 			return;
+		}
 		String text = hypothesis.getHypstr();
-		speechProcessor.f(text);
+		Log.i("Current Text", text);
+
+		if(recognizer.getSearchName().equals("wakeup") && text.equals(KEYPHRASE)) {
+			Log.i("Current Text", "Tell me what you want");
+			tts.Say("Tell me what you want");
+		} else {
+			speechProcessor.f(text);
+		}
+		switchSpeech("menu");
 	}
 
 	@Override
