@@ -27,7 +27,7 @@ public class Recognizer implements RecognitionListener {
 	private SpeechRecognizer recognizer;
 
 	/* Keyword we are looking for to activate menu */
-	private static final String KEYPHRASE = "ok google";//"no what";
+	private static final String KEYPHRASE = "hello";//"no what";
 
 	private String currentSearchName = "wakeup";
 
@@ -121,7 +121,7 @@ public class Recognizer implements RecognitionListener {
 		}
 		else {
 			Log.i("Current Text", "menu");
-			recognizer.startListening(searchName, 2000);
+			recognizer.startListening(searchName, 10000);
 		}
 	}
 
@@ -137,7 +137,7 @@ public class Recognizer implements RecognitionListener {
 	@Override
 	public void onResult(Hypothesis hypothesis) {
 		if(hypothesis == null) {
-			switchSpeech("wakeup");
+			switchSpeech(recognizer.getSearchName());
 			return;
 		}
 		String text = hypothesis.getHypstr();
@@ -160,7 +160,8 @@ public class Recognizer implements RecognitionListener {
 	@Override
 	public void onTimeout() {
 		Log.i("Current Text", "Timeout");
-		switchSpeech("wakeup");
+		tts.Say("Bye for now");
+		runRecognizerSetup();
 	}
 
 	public void cleanup() {
