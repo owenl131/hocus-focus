@@ -11,17 +11,4 @@
                 android:radius="1000dp"></corners>
         </shape>
     </item>
-    <item
-        android:top="8dp"
-        android:left="8dp"
-        android:height="44dp"
-        android:width="112dp">
-        <shape
-            android:shape="rectangle">
-            <solid
-                android:color="@color/colorBackground"></solid>
-            <corners
-                android:radius="1000dp"></corners>
-        </shape>
-    </item>
 </layer-list>

@@ -56,28 +56,39 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </LinearLayout>
     <FrameLayout
+        android:background="@color/colorBackgroundDark"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <TextView
+            android:layout_gravity="center_vertical"
+            android:layout_margin="16dp"
             android:id="@+id/tasks"
-            android:layout_marginLeft="16dp"
             android:text="Tasks"
+            android:textColor="@color/colorGrey"
             android:textSize="24sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
         <ImageView
             android:id="@+id/plus"
-            android:layout_gravity="right|end"
-            android:src="@color/colorBackgroundDark"
-            android:layout_width="64dp"
-            android:layout_height="64dp" />
+            android:padding="16dp"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center_vertical|right|end"
+            android:src="@drawable/plus" />
 
     </FrameLayout>
 
     <LinearLayout
+        android:layout_weight="1"
+        android:background="@color/colorBackgroundDark"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

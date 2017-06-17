@@ -8,4 +8,5 @@
     <color name="colorMainButton">#76FF03</color>
     <color name="colorProgressBackground">#FFFFFF</color>
     <color name="colorCancel">#F44336</color>
+    <color name="colorGrey">#BBBBBB</color>
 </resources>
