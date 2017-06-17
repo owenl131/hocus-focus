@@ -60,4 +60,5 @@ public class BoostActivity extends AppCompatActivity {
 		final ArcProgress progress = (ArcProgress) findViewById(R.id.progress);
 		mTimerView = (TextView) findViewById(R.id.timerView);
 	}
+
 }
