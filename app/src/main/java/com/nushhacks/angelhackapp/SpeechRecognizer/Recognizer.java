@@ -140,6 +140,7 @@ public class Recognizer implements RecognitionListener {
 		Log.d("Current Partial", text);
 		//speechProcessor.f(text);
         boostActivity.onSpeechPartial(text);
+
 	}
 
 	@Override
@@ -154,7 +155,7 @@ public class Recognizer implements RecognitionListener {
 
 		if(recognizer.getSearchName().equals("wakeup") && text.contains(KEYPHRASE)) {
 			Log.i("Current Text", "How may I help you?");
-			tts.Say("Tell me what you want");
+			tts.Say("How may I help you?");
 		} else if (recognizer.getSearchName().equals("menu")) {
 			speechProcessor.f(text);
 		}
