@@ -153,7 +153,7 @@ public class Recognizer implements RecognitionListener {
 		Log.i("Current Text", text);
 
 		if(recognizer.getSearchName().equals("wakeup") && text.contains(KEYPHRASE)) {
-			Log.i("Current Text", "Tell me what you want");
+			Log.i("Current Text", "How may I help you?");
 			tts.Say("Tell me what you want");
 		} else if (recognizer.getSearchName().equals("menu")) {
 			speechProcessor.f(text);
