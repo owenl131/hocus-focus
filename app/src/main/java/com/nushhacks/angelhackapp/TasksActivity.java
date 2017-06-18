@@ -205,6 +205,10 @@ public class TasksActivity extends AppCompatActivity {
     }
 
     public void addNewSubtask(View view) throws JSONException{
+        if(subtasks.size() > 1){
+            JSONObject lastObj = subtasks.get(subtasks.size() - 1);
+            if(lastObj.getInt("duration")<=0 || lastObj.get("duration") == null|| lastObj.getString("plan").trim().equals("")) return;
+        }
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("plan", "");
         jsonObject.put("duration", null);
@@ -242,7 +246,15 @@ public class TasksActivity extends AppCompatActivity {
         for (int i = 0; i < subtasks.size(); i++) {
             JSONObject tempObj = subtasks.get(i);
             Log.i("subtask", tempObj.toString());
-            arr.put(tempObj);
+            try {
+                // TODO: make the edittext show error instead
+                if(tempObj.getString("plan").trim().equals("") || tempObj.getInt("duration") <= 0 || tempObj.get("duration") == null){
+                    continue;
+                }
+                arr.put(tempObj);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 //            try {
 //                int duration = Integer.parseInt(etDur.getText().toString());
 //                tempObj.put("duration", duration);
