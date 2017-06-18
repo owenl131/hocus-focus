@@ -82,9 +82,19 @@ public class TasksActivity extends AppCompatActivity {
                     holder.tw1.updatePosition(holder.getAdapterPosition());
                     holder.tw2.updatePosition(holder.getAdapterPosition());
                     //holder.mEditText.setText(mDataset[holder.getAdapterPosition()]);
-                    holder.mDurationView.setText(subtasks.get(holder.getAdapterPosition()).getString("duration"));
-                    holder.mPlanView.setText(Integer.toString(subtasks.get(holder.getAdapterPosition()).getInt("plan")));
+                    JSONObject jo = subtasks.get(holder.getAdapterPosition());
+                    Log.d("adapterPosition","" + holder.getAdapterPosition());
+                    Log.d("adapterPosition","" + position);
+                    holder.mPlanView.setText(jo.getString("plan"));
+                    if(jo.has("duration")){
+                        holder.mDurationView.setText(Integer.toString(jo.getInt("duration")));
+                    }
+                    else{
+                        holder.mDurationView.setText(null);
+                    }
 
+                    Log.d("adapterPosition","" + subtasks.get(holder.getAdapterPosition()).toString());
+                    Log.d("adapterPosition","" + jo.toString());
                     //holder.mDurationView.setText(Integer.toString(jsonObject.getInt("duration")));
                     //holder.mPlanView.setText(jsonObject.getString("plan"));
                     holder.mCancelView.setOnClickListener(new View.OnClickListener() {
@@ -108,7 +118,7 @@ public class TasksActivity extends AppCompatActivity {
         //TODO: Test whether editing works
         Intent intent = getIntent();
         boolean newTask = intent.getBooleanExtra("new_task", false);
-        if(newTask){
+        /*if(newTask){
             Bundle b = intent.getExtras();
             JSONObject jo = (JSONObject)b.get("json_obj");
 
@@ -128,7 +138,7 @@ public class TasksActivity extends AppCompatActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        }
+        }*/
     }
 
     class TaskViewHolder extends RecyclerView.ViewHolder {
@@ -168,12 +178,15 @@ public class TasksActivity extends AppCompatActivity {
                     if(jo.has(key)) {
                          o = jo.get(key);
                     }
-                    if(key.equals("duration") || o instanceof Integer){
-                        subtasks.get(position).put(key, charSequence.toString().trim().equalsIgnoreCase("")?0:Integer.parseInt(charSequence.toString()));
+                    if(key.equals("duration")){
+                        Log.d("duration",(charSequence.toString()==null||charSequence.toString().trim().equalsIgnoreCase("")?0:Integer.parseInt(charSequence.toString()))+"");
+                        subtasks.get(position).put(key, charSequence.toString()==null||charSequence.toString().trim().equalsIgnoreCase("")?0:Integer.parseInt(charSequence.toString()));
                     }
-                    else if (o instanceof String){
+                    else if (key.equals("plan")){
+                        Log.d("plan",charSequence.toString());
                         subtasks.get(position).put(key, charSequence.toString());
                     }
+                    Log.i(key,subtasks.toString());
                     Log.i(key,subtasks.get(position).toString());
                     Log.i(key,""+position);
                 } catch (JSONException e) {
@@ -205,9 +218,9 @@ public class TasksActivity extends AppCompatActivity {
     }
 
     public void addNewSubtask(View view) throws JSONException{
-        if(subtasks.size() > 1){
+        if(subtasks.size() > 0){
             JSONObject lastObj = subtasks.get(subtasks.size() - 1);
-            if(lastObj.getInt("duration")<=0 || lastObj.get("duration") == null|| lastObj.getString("plan").trim().equals("")) return;
+            if(!lastObj.has("duration") ||lastObj.getInt("duration")<=0 ||  lastObj.getString("plan").trim().equals("")) return;
         }
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("plan", "");
@@ -248,7 +261,7 @@ public class TasksActivity extends AppCompatActivity {
             Log.i("subtask", tempObj.toString());
             try {
                 // TODO: make the edittext show error instead
-                if(tempObj.getString("plan").trim().equals("") || tempObj.getInt("duration") <= 0 || tempObj.get("duration") == null){
+                if(!tempObj.has("duration")  || tempObj.getString("plan").trim().equals("") || tempObj.getInt("duration") <= 0 ){
                     continue;
                 }
                 arr.put(tempObj);
