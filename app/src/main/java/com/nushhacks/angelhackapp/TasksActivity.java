@@ -237,6 +237,7 @@ public class TasksActivity extends AppCompatActivity {
         int durationSum = 0;
         for (int i = 0; i < subtasks.size(); i++) {
             JSONObject tempObj = subtasks.get(i);
+            arr.put(tempObj);
 //            try {
 //                int duration = Integer.parseInt(etDur.getText().toString());
 //                tempObj.put("duration", duration);
