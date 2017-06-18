@@ -5,7 +5,8 @@
                                              android:orientation="vertical"
                                              android:layout_width="match_parent"
                                              android:layout_height="match_parent"
-    android:padding="32dp">
+    android:padding="32dp"
+    android:clipChildren="false">
     <ImageView
         app:layout_constraintTop_toTopOf="parent"
         android:id="@+id/ringbackground"
@@ -46,7 +47,8 @@
         android:layout_height="0dp"/>
     <TextView
         android:id="@+id/timerView"
-        android:text="Time"
+        android:textAlignment="center"
+        android:text="TIME LEFT\n10:00"
         android:textSize="32sp"
         android:textColor="@color/colorMainButton"
         app:layout_constraintTop_toTopOf="@+id/ring"
@@ -77,8 +79,8 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ring"
+        app:layout_constraintBottom_toTopOf="@+id/giveup"
         android:layout_marginTop="16dp"
-        android:visibility="gone"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:cardCornerRadius="2dp"
@@ -117,11 +119,11 @@
             android:layout_height="wrap_content"/>
 
         <TextView
+            android:id="@+id/giveuptext"
             android:textColor="@android:color/white"
             android:layout_gravity="center"
             android:text="GIVE UP"
             android:textStyle="bold"
-
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 

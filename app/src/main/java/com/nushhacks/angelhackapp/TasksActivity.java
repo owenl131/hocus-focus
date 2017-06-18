@@ -203,7 +203,7 @@ public class TasksActivity extends AppCompatActivity {
     public void addNewSubtask(View view) throws JSONException{
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("plan", "");
-        jsonObject.put("duration", 0);
+        jsonObject.put("duration", null);
         subtasks.add(jsonObject);
         recyclerView.getAdapter().notifyDataSetChanged();
     }

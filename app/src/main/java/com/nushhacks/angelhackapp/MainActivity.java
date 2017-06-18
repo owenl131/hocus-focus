@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private int buttonState = 0;
     private Rect rect;
     private View mInnerCircle, mArrowView;
-    private TextView mStartView, mCurrentTaskView;
+    private TextView mStartView, mCurrentTaskView, mCurrentTaskDescView;
     private BottomSheetBehavior bottomSheetBehavior;
     private RecyclerView recyclerView;
     private String selectedTaskName = null;
@@ -84,8 +84,10 @@ public class MainActivity extends AppCompatActivity {
 
 		Typeface dosis = Typeface.createFromAsset(getAssets(), "fonts/Dosis-Bold.ttf");
 		Typeface cabin = Typeface.createFromAsset(getAssets(), "fonts/Cabin-Bold.ttf");
+        mCurrentTaskDescView = (TextView) findViewById(R.id.taskDesc);
         mCurrentTaskView = (TextView) findViewById(R.id.tasks);
 		mCurrentTaskView.setTypeface(dosis);
+        mCurrentTaskDescView.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/Cabin-Regular.ttf"));
         ((TextView) findViewById(R.id.t3)).setTypeface(dosis);
 
 		((TextView) findViewById(R.id.appname)).setTypeface(cabin);
@@ -109,10 +111,11 @@ public class MainActivity extends AppCompatActivity {
                 holder.mRootView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Log.d("MainActivity", pair.first + " " + pair.second);
                         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                         selectedTaskName = pair.first;
                         mCurrentTaskView.setText(pair.first);
+                        mCurrentTaskDescView.setVisibility(View.VISIBLE);
+                        mCurrentTaskDescView.setText(pair.second+" min");
                     }
                 });
             }
@@ -210,10 +213,10 @@ public class MainActivity extends AppCompatActivity {
                                 Pair.create(findViewById(R.id.ring), "ring"),
                                 Pair.create(findViewById(R.id.ring1), "ring1"));
                 Bundle bundle = options.toBundle();
-                intent.putExtra("Duration", 1000);
+                intent.putExtra("Duration", duration);
                 startActivity(intent, bundle);
             } else {
-                intent.putExtra("Duration", 1000);
+                intent.putExtra("Duration", duration);
                 startActivity(intent);
             }
         }
