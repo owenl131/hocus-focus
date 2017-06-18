@@ -66,47 +66,52 @@ public class BoostActivity extends AppCompatActivity {
 	}
 
 	public void startup() {
-        findViewById(R.id.ring).animate().alpha(0).setDuration(1000).start();
-        progress.setVisibility(View.VISIBLE);
-        ObjectAnimator anim = ObjectAnimator.ofInt(progress, "progress", 100, 0);
-        anim.setInterpolator(new DecelerateInterpolator());
-        anim.setDuration(1000);
-        anim.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animator) {
 
-            }
+        if (!startedTimer) {
+            findViewById(R.id.ring).animate().alpha(0).setDuration(1000).start();
+            progress.setVisibility(View.VISIBLE);
+            ObjectAnimator anim = ObjectAnimator.ofInt(progress, "progress", 100, 0);
+            anim.setInterpolator(new DecelerateInterpolator());
+            anim.setDuration(1000);
+            anim.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animator) {
 
-            @Override
-            public void onAnimationEnd(Animator animator) {
-                if (!startedTimer) {
-                    startedTimer = true;
-                    new CountDownTimer(duration, tick) {
-                        public void onTick(long millisUntilFinished) {
-                            if (previousMillis == -1)
-                                previousMillis = millisUntilFinished;
-                            if (previousMillis - millisUntilFinished > updateTick) {
-                                previousMillis = millisUntilFinished;
-                                int oldProgress = progress.getProgress();
-                                int newProgress = (int) ((100) * (1 - (float) millisUntilFinished / duration));
-                                ObjectAnimator objectAnimator = ObjectAnimator.ofInt(progress, "progress", oldProgress, newProgress);
-                                objectAnimator.setInterpolator(new DecelerateInterpolator());
-                                objectAnimator.setDuration(updateTick);
-                                objectAnimator.start();
-                            }
-                            mTimerView.setText(formatMillis(millisUntilFinished));
-                        }
+                }
 
-                        public void onFinish() {
-                            mTimerView.setText("DONE");
-                            int oldProgress = progress.getProgress();
-                            int newProgress = 100;
-                            ObjectAnimator objectAnimator = ObjectAnimator.ofInt(progress, "progress", oldProgress, newProgress);
-                            objectAnimator.setInterpolator(new DecelerateInterpolator());
-                            objectAnimator.setDuration(updateTick);
-                            objectAnimator.start();
-                            mGiveUpView.setVisibility(View.GONE);
-                            done = true;
+                @Override
+                public void onAnimationEnd(Animator animator) {
+                    if (!startedTimer) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                startedTimer = true;
+                                new CountDownTimer(duration, tick) {
+                                    public void onTick(long millisUntilFinished) {
+                                        if (previousMillis == -1)
+                                            previousMillis = millisUntilFinished;
+                                        if (previousMillis - millisUntilFinished > updateTick) {
+                                            previousMillis = millisUntilFinished;
+                                            int oldProgress = progress.getProgress();
+                                            int newProgress = (int) ((100) * (1 - (float) millisUntilFinished / duration));
+                                            ObjectAnimator objectAnimator = ObjectAnimator.ofInt(progress, "progress", oldProgress, newProgress);
+                                            objectAnimator.setInterpolator(new DecelerateInterpolator());
+                                            objectAnimator.setDuration(updateTick);
+                                            objectAnimator.start();
+                                        }
+                                        mTimerView.setText(formatMillis(millisUntilFinished));
+                                    }
+
+                                    public void onFinish() {
+                                        mTimerView.setText("DONE");
+                                        int oldProgress = progress.getProgress();
+                                        int newProgress = 100;
+                                        ObjectAnimator objectAnimator = ObjectAnimator.ofInt(progress, "progress", oldProgress, newProgress);
+                                        objectAnimator.setInterpolator(new DecelerateInterpolator());
+                                        objectAnimator.setDuration(updateTick);
+                                        objectAnimator.start();
+                                        mGiveUpView.setVisibility(View.GONE);
+                                        done = true;
 //                        ((TextView) findViewById(R.id.giveuptext)).setText("RETURN TO HOME");
 //                        mGiveUpView.setOnClickListener(new View.OnClickListener() {
 //                            @Override
@@ -114,22 +119,25 @@ public class BoostActivity extends AppCompatActivity {
 //                                finish();
 //                            }
 //                        });
-                        }
-                    }.start();
+                                    }
+                                }.start();
+                            }
+                        });
+                    }
                 }
-            }
 
-            @Override
-            public void onAnimationCancel(Animator animator) {
+                @Override
+                public void onAnimationCancel(Animator animator) {
 
-            }
+                }
 
-            @Override
-            public void onAnimationRepeat(Animator animator) {
+                @Override
+                public void onAnimationRepeat(Animator animator) {
 
-            }
-        });
-        anim.start();
+                }
+            });
+            anim.start();
+        }
     }
 
     @Override
@@ -252,7 +260,7 @@ public class BoostActivity extends AppCompatActivity {
 	public void onBackPressed() {
 		// Do nothing
         if (done)
-            onBackPressed();
+            super.onBackPressed();
 	}
 
 	public static String formatMillis(long millis) {

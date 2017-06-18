@@ -208,8 +208,7 @@ public class TasksActivity extends AppCompatActivity {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("plan", "");
         jsonObject.put("duration", null);
-        subtasks.add(jsonObject);
-        recyclerView.getAdapter().notifyDataSetChanged();
+        subtasks.add(jsonObject);;
     }
 
     public void saveToFile(View view) {
