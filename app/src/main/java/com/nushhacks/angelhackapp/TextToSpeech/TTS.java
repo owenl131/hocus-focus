@@ -41,6 +41,11 @@ public class TTS
         });
     }
 
+    public void CancelAll()
+    {
+        t.stop();
+    }
+
     public void Say(String s)
     {
         if (Build.VERSION.SDK_INT >= 21)
