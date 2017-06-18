@@ -180,7 +180,7 @@ public class BoostActivity extends AppCompatActivity {
 						tts.Say("It is now " + format.format(date2) + ".");
 						break;
                     case "TIME LEFT":
-                        long left = startTime.getTime() + duration*60*1000 - new Date().getTime();
+                        long left = startTime.getTime() + duration - new Date().getTime();
                         left /= 1000; // seconds
                         tts.Say("You have " + left/60 + " minutes and " + left%60 + " seconds left.");
                         break;
