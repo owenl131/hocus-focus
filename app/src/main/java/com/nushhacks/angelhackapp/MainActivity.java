@@ -191,7 +191,9 @@ public class MainActivity extends AppCompatActivity {
     {
         Intent intent = new Intent(MainActivity.this, BoostActivity.class);
         try {
+            Log.d("mainmain", selectedTaskName);
             JSONObject obj = TasksIO.getFromFile(selectedTaskName, this);
+            Log.d("mainmain", obj.toString());
             int duration = obj.getInt("duration");
             JSONArray arr = obj.getJSONArray("subtasks");
             ArrayList<Pair<String, Integer>> list = new ArrayList<>();
@@ -230,6 +232,12 @@ public class MainActivity extends AppCompatActivity {
     // get subtasks and schedule notifications
     private void setupTaskCheckpoints(final ArrayList<Pair<String, Integer>> arr)
     {
+        Log.d("mainmain", arr.toString());
+
+        for (Pair<String, Integer> p : arr)
+        {
+            Log.d("mainmain", p.first + "," + p.second);
+        }
         if (arr == null) return;
         final TTS tts = new TTS(this);
         Handler handler = new Handler();
