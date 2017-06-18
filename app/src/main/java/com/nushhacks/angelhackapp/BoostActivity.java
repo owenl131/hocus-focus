@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit;
 
 public class BoostActivity extends AppCompatActivity {
 
-	private TextView mTimerView, mSpeechTextView;
+	private TextView mTimerView, mSpeechTextView, mTaskNameView;
     private View mGiveUpView, mSpeechCardView;
     private ArcProgress progress;
 	private long previousMillis = -1;
@@ -53,6 +53,7 @@ public class BoostActivity extends AppCompatActivity {
 	private int updateTick = 500;
     private Date startTime;
     private boolean done = false;
+    private boolean startedTimer = false;
 
     private static long prevRequest = -1;
 
@@ -65,8 +66,6 @@ public class BoostActivity extends AppCompatActivity {
 	}
 
 	public void startup() {
-        findViewById(R.id.ringbackground).setVisibility(View.VISIBLE);
-        findViewById(R.id.ringbackground).setAlpha(1);
         findViewById(R.id.ring).animate().alpha(0).setDuration(1000).start();
         progress.setVisibility(View.VISIBLE);
         ObjectAnimator anim = ObjectAnimator.ofInt(progress, "progress", 100, 0);
@@ -80,31 +79,34 @@ public class BoostActivity extends AppCompatActivity {
 
             @Override
             public void onAnimationEnd(Animator animator) {
-                new CountDownTimer(duration, tick) {
-                    public void onTick(long millisUntilFinished) {
-                        if (previousMillis == -1)
-                            previousMillis = millisUntilFinished;
-                        if (previousMillis - millisUntilFinished > updateTick) {
-                            previousMillis = millisUntilFinished;
+                if (!startedTimer) {
+                    startedTimer = true;
+                    new CountDownTimer(duration, tick) {
+                        public void onTick(long millisUntilFinished) {
+                            if (previousMillis == -1)
+                                previousMillis = millisUntilFinished;
+                            if (previousMillis - millisUntilFinished > updateTick) {
+                                previousMillis = millisUntilFinished;
+                                int oldProgress = progress.getProgress();
+                                int newProgress = (int) ((100) * (1 - (float) millisUntilFinished / duration));
+                                ObjectAnimator objectAnimator = ObjectAnimator.ofInt(progress, "progress", oldProgress, newProgress);
+                                objectAnimator.setInterpolator(new DecelerateInterpolator());
+                                objectAnimator.setDuration(updateTick);
+                                objectAnimator.start();
+                            }
+                            mTimerView.setText(formatMillis(millisUntilFinished));
+                        }
+
+                        public void onFinish() {
+                            mTimerView.setText("DONE");
                             int oldProgress = progress.getProgress();
-                            int newProgress = (int)((100)*(1-(float)millisUntilFinished/duration));
+                            int newProgress = 100;
                             ObjectAnimator objectAnimator = ObjectAnimator.ofInt(progress, "progress", oldProgress, newProgress);
                             objectAnimator.setInterpolator(new DecelerateInterpolator());
                             objectAnimator.setDuration(updateTick);
                             objectAnimator.start();
-                        }
-                        mTimerView.setText(formatMillis(millisUntilFinished));
-                    }
-                    public void onFinish() {
-                        mTimerView.setText("DONE");
-                        int oldProgress = progress.getProgress();
-                        int newProgress = 100;
-                        ObjectAnimator objectAnimator = ObjectAnimator.ofInt(progress, "progress", oldProgress, newProgress);
-                        objectAnimator.setInterpolator(new DecelerateInterpolator());
-                        objectAnimator.setDuration(updateTick);
-                        objectAnimator.start();
-                        mGiveUpView.setVisibility(View.GONE);
-                        done = true;
+                            mGiveUpView.setVisibility(View.GONE);
+                            done = true;
 //                        ((TextView) findViewById(R.id.giveuptext)).setText("RETURN TO HOME");
 //                        mGiveUpView.setOnClickListener(new View.OnClickListener() {
 //                            @Override
@@ -112,8 +114,9 @@ public class BoostActivity extends AppCompatActivity {
 //                                finish();
 //                            }
 //                        });
-                    }
-                }.start();
+                        }
+                    }.start();
+                }
             }
 
             @Override
@@ -200,7 +203,10 @@ public class BoostActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_boost);
 		duration = getIntent().getIntExtra("Duration", 30) * 60 * 1000;
 		progress = (ArcProgress) findViewById(R.id.progress);
-		mTimerView = (TextView) findViewById(R.id.timerView);
+        mTaskNameView = (TextView) findViewById(R.id.taskname);
+        mTaskNameView.setText(getIntent().getStringExtra("Name"));
+        mTaskNameView.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/Dosis-Bold.ttf"));
+        mTimerView = (TextView) findViewById(R.id.timerView);
         mTimerView.setText(formatMillis(duration));
         mGiveUpView = findViewById(R.id.giveup);
         mTimerView.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/AnonymousPro-Bold.ttf"));
