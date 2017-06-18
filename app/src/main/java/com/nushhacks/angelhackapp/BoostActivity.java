@@ -278,18 +278,20 @@ public class BoostActivity extends AppCompatActivity {
 	}
 
 	public void onSpeechStart() {
-        mSpeechCardView.setVisibility(View.VISIBLE);
-        mSpeechCardView.setAlpha(0f);
-        mSpeechCardView.animate().alpha(1).start();
-        mSpeechTextView.setText("");
+        //mSpeechCardView.setVisibility(View.VISIBLE);
+        //mSpeechCardView.setAlpha(0f);
+        //mSpeechCardView.animate().alpha(1).start();
+        //mSpeechTextView.setText("");
     }
 
     public void onSpeechPartial(String partial) {
-        mSpeechTextView.setText(partial);
+
+        //mSpeechTextView.setText(partial);
     }
 
     public void onSpeechStop() {
-        mSpeechCardView.animate().alpha(0).start();
+
+        //mSpeechCardView.animate().alpha(0).start();
     }
 
 }
