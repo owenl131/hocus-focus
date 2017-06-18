@@ -204,6 +204,7 @@ public class MainActivity extends AppCompatActivity {
                         ((JSONObject)arr.get(i)).getString("plan"),
                         ((JSONObject)arr.get(i)).getInt("duration")
                 ));
+
             setupTaskCheckpoints(list);
 
             intent.putExtra("Duration", duration);
@@ -262,7 +263,7 @@ public class MainActivity extends AppCompatActivity {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        tts.Say("You're almost done! Only " + dur + " minutes left.");
+                        tts.Say("You're almost done! Only " + (dur < 10 ? dur*6 + " seconds left." : dur/10 + " minutes left."));
                     }
                 }, (minToMs*elapsed + minToMs*dur*9/10));
             }
@@ -273,7 +274,7 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         tts.Say("You should be wrapping up " + name +
                                 " and moving on to " + nextName +
-                                " soon. Just " + dur + " minutes left on " + name + ".");
+                                " soon. Just " + (dur < 10 ? dur*6 + " seconds" : dur/10 + " minutes") + " left on " + name + ".");
                     }
                 }, (minToMs*elapsed + minToMs*dur*9/10));
             }
