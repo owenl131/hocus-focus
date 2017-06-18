@@ -26,7 +26,9 @@ import com.nushhacks.angelhackapp.NotificationReader.NotificationListener;
 import com.nushhacks.angelhackapp.SpeechRecognizer.Recognizer;
 import com.nushhacks.angelhackapp.TextToSpeech.TTS;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -47,6 +49,9 @@ public class BoostActivity extends AppCompatActivity {
 	private int duration = 50000;
 	private int tick = 1;
 	private int updateTick = 500;
+    private Date startTime;
+
+    private static long prevRequest = -1;
 
 	@Override
 	public void onEnterAnimationComplete() {
@@ -107,7 +112,13 @@ public class BoostActivity extends AppCompatActivity {
 		anim.start();
 	}
 
-	private void setupSpeechListener()
+    @Override
+    protected void onStart() {
+        super.onStart();
+        startTime = new Date();
+    }
+
+    private void setupSpeechListener()
 	{
 		recognizer = new Recognizer(getApplicationContext(), new Recognizer.SpeechProcessor() {
 			@Override
@@ -116,6 +127,15 @@ public class BoostActivity extends AppCompatActivity {
 
 				switch (text.toUpperCase()) {
 					case "NOTIFICATION":
+					case "UPDATES":
+					case "MESSAGES":
+					    Date date = new Date();
+                        if (date.getTime() - prevRequest < 60*1000)
+                        {
+                            tts.Say("Focus...");
+                            return;
+                        }
+                        prevRequest  = date.getTime();
 						ArrayList<NotificationHandler.NotificationInfo> notifications = notificationHandler.getNotifications();
 						String notificationCount = "Received " + Integer.toString(notifications.size());
 						if(notifications.size() == 1)
@@ -137,6 +157,16 @@ public class BoostActivity extends AppCompatActivity {
 							tts.Say(info.text);
 						}
 						break;
+					case "TIME NOW":
+						Date date2 = new Date();
+						SimpleDateFormat format = new SimpleDateFormat("h:mm a");
+						tts.Say("It is now " + format.format(date2) + ".");
+						break;
+                    case "TIME LEFT":
+                        long left = startTime.getTime() + duration*60*1000 - new Date().getTime();
+                        left /= 1000; // seconds
+                        tts.Say("You have " + left/60 + " minutes and " + left%60 + " seconds left.");
+                        break;
 					default:
 						// tts.Say("I don't know what you are saying.");
 						break;

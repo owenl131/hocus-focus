@@ -135,27 +135,6 @@ public class TasksIO {
     }
 
     public static JSONObject getFromFile(String name, AppCompatActivity aca) {
-        //File f = aca.getFilesDir();
-        /*StringBuilder result = new StringBuilder();
-        File curFile = new File(aca.getFilesDir().getAbsolutePath() + "/" + FILE_NAME + ".json");
-
-        try {
-            InputStream inputStream = new FileInputStream(curFile);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                result.append(line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            return new JSONObject(result.toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;*/
 
         JSONArray ja = getAllFromFile(aca);
         if(ja == null) return null;
@@ -168,7 +147,6 @@ public class TasksIO {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
         }
         return null;
     }

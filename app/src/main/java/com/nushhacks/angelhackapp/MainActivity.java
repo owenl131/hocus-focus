@@ -28,15 +28,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.nushhacks.angelhackapp.NotificationReader.NotificationHandler;
-import com.nushhacks.angelhackapp.NotificationReader.NotificationListener;
-import com.nushhacks.angelhackapp.SpeechRecognizer.Recognizer;
 import com.nushhacks.angelhackapp.TextToSpeech.TTS;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -193,19 +190,36 @@ public class MainActivity extends AppCompatActivity {
     private void startClicked()
     {
         Intent intent = new Intent(MainActivity.this, BoostActivity.class);
-        setupTaskCheckpoints();
-        if (Build.VERSION.SDK_INT >= 21) {
-            ActivityOptions options = ActivityOptions
-                    .makeSceneTransitionAnimation(MainActivity.this,
-                            Pair.create(findViewById(R.id.ring), "ring"),
-                            Pair.create(findViewById(R.id.ring1), "ring1"));
-            Bundle bundle = options.toBundle();
-            intent.putExtra("Duration", 1000);
-            startActivity(intent, bundle);
+        try {
+            Log.d("mainmain", selectedTaskName);
+            JSONObject obj = TasksIO.getFromFile(selectedTaskName, this);
+            Log.d("mainmain", obj.toString());
+            int duration = obj.getInt("duration");
+            JSONArray arr = obj.getJSONArray("subtasks");
+            ArrayList<Pair<String, Integer>> list = new ArrayList<>();
+            for (int i = 0; i < arr.length(); i++)
+                list.add(Pair.create(
+                        ((JSONObject)arr.get(i)).getString("plan"),
+                        ((JSONObject)arr.get(i)).getInt("duration")
+                ));
+            setupTaskCheckpoints(list);
+
+            if (Build.VERSION.SDK_INT >= 21) {
+                ActivityOptions options = ActivityOptions
+                        .makeSceneTransitionAnimation(MainActivity.this,
+                                Pair.create(findViewById(R.id.ring), "ring"),
+                                Pair.create(findViewById(R.id.ring1), "ring1"));
+                Bundle bundle = options.toBundle();
+                intent.putExtra("Duration", 1000);
+                startActivity(intent, bundle);
+            } else {
+                intent.putExtra("Duration", 1000);
+                startActivity(intent);
+            }
         }
-        else {
-            intent.putExtra("Duration", 1000);
-            startActivity(intent);
+        catch(Exception e)
+        {
+
         }
     }
 
@@ -216,11 +230,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // get subtasks and schedule notifications
-    private void setupTaskCheckpoints()
+    private void setupTaskCheckpoints(final ArrayList<Pair<String, Integer>> arr)
     {
-        final ArrayList<Pair<String, Integer>> arr = TasksIO.getLastSubtasks(this);
+        Log.d("mainmain", arr.toString());
+
+        for (Pair<String, Integer> p : arr)
+        {
+            Log.d("mainmain", p.first + "," + p.second);
+        }
         if (arr == null) return;
-        //TasksIO.getAllTasksNameAndDuration(this);
         final TTS tts = new TTS(this);
         Handler handler = new Handler();
         long elapsed = 0;
