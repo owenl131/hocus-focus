@@ -1,10 +1,7 @@
 package com.nushhacks.angelhackapp;
 
 import android.animation.Animator;
-import android.animation.AnimatorInflater;
-import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
@@ -15,13 +12,11 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.WindowManager;
-import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
-import android.view.animation.Transformation;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,8 +27,6 @@ import com.nushhacks.angelhackapp.SpeechRecognizer.Recognizer;
 import com.nushhacks.angelhackapp.TextToSpeech.TTS;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -42,8 +35,8 @@ import java.util.concurrent.TimeUnit;
 
 public class BoostActivity extends AppCompatActivity {
 
-	private TextView mTimerView;
-    private View mGiveUpView;
+	private TextView mTimerView, mSpeechTextView;
+    private View mGiveUpView, mSpeechCardView;
     private ArcProgress progress;
 	private long previousMillis = -1;
 
@@ -51,7 +44,7 @@ public class BoostActivity extends AppCompatActivity {
 	NotificationHandler notificationHandler;
 	Recognizer recognizer;
 
-	private int duration = 5000;
+	private int duration = 50000;
 	private int tick = 1;
 	private int updateTick = 500;
 
@@ -151,6 +144,7 @@ public class BoostActivity extends AppCompatActivity {
 			}
 		});
 		recognizer.runRecognizerSetup();
+        recognizer.setBoostActivity(this);
 	}
 
 	@Override
@@ -177,6 +171,14 @@ public class BoostActivity extends AppCompatActivity {
 
 		tts = new TTS(getApplicationContext());
 		setupSpeechListener();
+
+
+        mSpeechCardView = findViewById(R.id.speechcard);
+        mSpeechTextView = (TextView) findViewById(R.id.speechtext);
+
+        if (Build.VERSION.SDK_INT < 21)
+            onEnterAnimationComplete();
+
 	}
 
 	@Override
@@ -206,5 +208,20 @@ public class BoostActivity extends AppCompatActivity {
 		super.onDestroy();
 		recognizer.cleanup();
 	}
+
+	public void onSpeechStart() {
+        mSpeechCardView.setVisibility(View.VISIBLE);
+        mSpeechCardView.setAlpha(0f);
+        mSpeechCardView.animate().alpha(1).start();
+        mSpeechTextView.setText("");
+    }
+
+    public void onSpeechPartial(String partial) {
+        mSpeechTextView.setText(partial);
+    }
+
+    public void onSpeechStop() {
+        mSpeechCardView.animate().alpha(0).start();
+    }
 
 }
