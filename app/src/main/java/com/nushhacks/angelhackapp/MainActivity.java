@@ -194,10 +194,9 @@ public class MainActivity extends AppCompatActivity {
     {
         Intent intent = new Intent(MainActivity.this, BoostActivity.class);
         try {
-            Log.d("mainmain", selectedTaskName);
             JSONObject obj = TasksIO.getFromFile(selectedTaskName, this);
-            Log.d("mainmain", obj.toString());
             int duration = obj.getInt("duration");
+            String name = obj.getString("name");
             JSONArray arr = obj.getJSONArray("subtasks");
             ArrayList<Pair<String, Integer>> list = new ArrayList<>();
             for (int i = 0; i < arr.length(); i++)
@@ -207,22 +206,22 @@ public class MainActivity extends AppCompatActivity {
                 ));
             setupTaskCheckpoints(list);
 
+            intent.putExtra("Duration", duration);
+            intent.putExtra("Name", name);
             if (Build.VERSION.SDK_INT >= 21) {
                 ActivityOptions options = ActivityOptions
                         .makeSceneTransitionAnimation(MainActivity.this,
                                 Pair.create(findViewById(R.id.ring), "ring"),
                                 Pair.create(findViewById(R.id.ring1), "ring1"));
                 Bundle bundle = options.toBundle();
-                intent.putExtra("Duration", duration);
                 startActivity(intent, bundle);
             } else {
-                intent.putExtra("Duration", duration);
                 startActivity(intent);
             }
         }
         catch(Exception e)
         {
-
+            e.printStackTrace();
         }
     }
 

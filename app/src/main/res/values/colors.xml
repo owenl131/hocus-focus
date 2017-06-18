@@ -6,7 +6,7 @@
     <color name="colorBackground">#38474F</color>
     <color name="colorBackgroundDark">#2C383F</color>
     <color name="colorMainButton">#76FF03</color>
-    <color name="colorProgressBackground">#FFFFFF</color>
+    <color name="colorProgressBackground">@color/colorBackgroundDark</color>
     <color name="colorCancel">#F44336</color>
     <color name="colorGrey">#BBBBBB</color>
 </resources>

@@ -83,7 +83,7 @@ public class TasksActivity extends AppCompatActivity {
                     holder.tw2.updatePosition(holder.getAdapterPosition());
                     //holder.mEditText.setText(mDataset[holder.getAdapterPosition()]);
                     holder.mDurationView.setText(subtasks.get(holder.getAdapterPosition()).getString("duration"));
-                    holder.mPlanView.setText(subtasks.get(holder.getAdapterPosition()).getString("plan"));
+                    holder.mPlanView.setText(Integer.toString(subtasks.get(holder.getAdapterPosition()).getInt("plan")));
 
                     //holder.mDurationView.setText(Integer.toString(jsonObject.getInt("duration")));
                     //holder.mPlanView.setText(jsonObject.getString("plan"));
@@ -163,8 +163,12 @@ public class TasksActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 try {
-                    Object o = subtasks.get(position).get(key);
-                    if(o instanceof Integer){
+                    JSONObject jo = subtasks.get(position);
+                    Object o = null;
+                    if(jo.has(key)) {
+                         o = jo.get(key);
+                    }
+                    if(key.equals("duration") || o instanceof Integer){
                         subtasks.get(position).put(key, charSequence.toString().trim().equalsIgnoreCase("")?0:Integer.parseInt(charSequence.toString()));
                     }
                     else if (o instanceof String){
@@ -237,6 +241,8 @@ public class TasksActivity extends AppCompatActivity {
         int durationSum = 0;
         for (int i = 0; i < subtasks.size(); i++) {
             JSONObject tempObj = subtasks.get(i);
+            Log.i("subtask", tempObj.toString());
+            arr.put(tempObj);
 //            try {
 //                int duration = Integer.parseInt(etDur.getText().toString());
 //                tempObj.put("duration", duration);
