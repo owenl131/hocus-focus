@@ -81,15 +81,28 @@
             android:layout_height="@dimen/peek_height"
             android:background="@color/colorBackgroundDark">
 
-            <TextView
-                android:id="@+id/tasks"
+            <LinearLayout
+                android:layout_marginLeft="16dp"
+                android:orientation="vertical"
+                android:gravity="center_vertical"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_margin="16dp"
-                android:text="Tasks"
-                android:textColor="@color/colorGrey"
-                android:textSize="24sp" />
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/tasks"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="Select a task"
+                    android:textColor="@color/colorGrey"
+                    android:textSize="24sp" />
+                <TextView
+                    android:visibility="gone"
+                    android:text="Description"
+                    android:id="@+id/taskDesc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
 
 
             <LinearLayout

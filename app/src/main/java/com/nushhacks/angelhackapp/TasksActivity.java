@@ -9,6 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -66,15 +68,25 @@ public class TasksActivity extends AppCompatActivity {
         recyclerView.setAdapter(new RecyclerView.Adapter<TaskViewHolder>() {
             @Override
             public TaskViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                return new TaskViewHolder(LayoutInflater.from(TasksActivity.this).inflate(R.layout.activity_tasks_list_inner, parent, false));
+                TaskTextWatcher tw1 = new TaskTextWatcher();
+                tw1.setKey("duration");
+                TaskTextWatcher tw2 = new TaskTextWatcher();
+                tw2.setKey("plan");
+                return new TaskViewHolder(LayoutInflater.from(TasksActivity.this).inflate(R.layout.activity_tasks_list_inner, parent, false), tw1, tw2);
             }
 
             @Override
             public void onBindViewHolder(TaskViewHolder holder, final int position) {
                 final JSONObject jsonObject = subtasks.get(position);
                 try {
-                    holder.mDurationView.setText(Integer.toString(jsonObject.getInt("duration")));
-                    holder.mPlanView.setText(jsonObject.getString("plan"));
+                    holder.tw1.updatePosition(holder.getAdapterPosition());
+                    holder.tw2.updatePosition(holder.getAdapterPosition());
+                    //holder.mEditText.setText(mDataset[holder.getAdapterPosition()]);
+                    holder.mDurationView.setText(subtasks.get(holder.getAdapterPosition()).getString("duration"));
+                    holder.mPlanView.setText(subtasks.get(holder.getAdapterPosition()).getString("plan"));
+
+                    //holder.mDurationView.setText(Integer.toString(jsonObject.getInt("duration")));
+                    //holder.mPlanView.setText(jsonObject.getString("plan"));
                     holder.mCancelView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -82,6 +94,7 @@ public class TasksActivity extends AppCompatActivity {
                             notifyItemRemoved(position);
                         }
                     });
+
                 } catch (JSONException e){
                     e.printStackTrace();
                 }
@@ -121,12 +134,51 @@ public class TasksActivity extends AppCompatActivity {
     class TaskViewHolder extends RecyclerView.ViewHolder {
         EditText mDurationView, mPlanView;
         View mCancelView;
-        public TaskViewHolder(View v) {
+        TaskTextWatcher tw1;
+        TaskTextWatcher tw2;
+        public TaskViewHolder(View v, TaskTextWatcher tw1, TaskTextWatcher tw2) {
             super(v);
             mDurationView = (EditText) v.findViewById(R.id.dMinorDurText);
             mPlanView = (EditText) v.findViewById(R.id.dMinorPlanText);
             mCancelView = v.findViewById(R.id.cancel);
+            this.tw1 = tw1;
+            this.tw2 = tw2;
+            mDurationView.addTextChangedListener(tw1);
+            mPlanView.addTextChangedListener(tw2);
         }
+    }
+
+    class TaskTextWatcher implements TextWatcher {
+            private int position;
+        private String key;
+            public void updatePosition(int position) {
+                this.position = position;
+            }
+            public void setKey(String key){
+                this.key = key;
+            }
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                try {
+                    Object o = subtasks.get(position).get(key);
+                    if(o instanceof Integer){
+                        subtasks.get(position).put(key, charSequence.toString().trim().equalsIgnoreCase("")?0:Integer.parseInt(charSequence.toString()));
+                    }
+                    else if (o instanceof String){
+                        subtasks.get(position).put(key, charSequence.toString());
+                    }
+                    Log.i(key,subtasks.get(position).toString());
+                    Log.i(key,""+position);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
     }
 
     @Override
@@ -151,7 +203,7 @@ public class TasksActivity extends AppCompatActivity {
     public void addNewSubtask(View view) throws JSONException{
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("plan", "");
-        jsonObject.put("duration", 0);
+        jsonObject.put("duration", null);
         subtasks.add(jsonObject);
         recyclerView.getAdapter().notifyDataSetChanged();
     }

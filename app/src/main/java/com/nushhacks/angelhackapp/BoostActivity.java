@@ -1,10 +1,8 @@
 package com.nushhacks.angelhackapp;
 
 import android.animation.Animator;
-import android.animation.AnimatorInflater;
-import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
@@ -13,15 +11,14 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.WindowManager;
-import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
-import android.view.animation.Transformation;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,8 +31,6 @@ import com.nushhacks.angelhackapp.TextToSpeech.TTS;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -44,8 +39,8 @@ import java.util.concurrent.TimeUnit;
 
 public class BoostActivity extends AppCompatActivity {
 
-	private TextView mTimerView;
-    private View mGiveUpView;
+	private TextView mTimerView, mSpeechTextView;
+    private View mGiveUpView, mSpeechCardView;
     private ArcProgress progress;
 	private long previousMillis = -1;
 
@@ -53,71 +48,86 @@ public class BoostActivity extends AppCompatActivity {
 	NotificationHandler notificationHandler;
 	Recognizer recognizer;
 
-	private int duration = 5000;
+	private int duration = 50000;
 	private int tick = 1;
 	private int updateTick = 500;
     private Date startTime;
+    private boolean done = false;
 
     private static long prevRequest = -1;
 
+    @TargetApi(21)
 	@Override
 	public void onEnterAnimationComplete() {
 		super.onEnterAnimationComplete();
 
-		findViewById(R.id.ringbackground).setVisibility(View.VISIBLE);
-		findViewById(R.id.ringbackground).setAlpha(1);
-		findViewById(R.id.ring).animate().alpha(0).setDuration(1000).start();
-		progress.setVisibility(View.VISIBLE);
-		ObjectAnimator anim = ObjectAnimator.ofInt(progress, "progress", 100, 0);
-		anim.setInterpolator(new DecelerateInterpolator());
-		anim.setDuration(1000);
-		anim.addListener(new Animator.AnimatorListener() {
-			@Override
-			public void onAnimationStart(Animator animator) {
+        startup();
+	}
 
-			}
+	public void startup() {
+        findViewById(R.id.ringbackground).setVisibility(View.VISIBLE);
+        findViewById(R.id.ringbackground).setAlpha(1);
+        findViewById(R.id.ring).animate().alpha(0).setDuration(1000).start();
+        progress.setVisibility(View.VISIBLE);
+        ObjectAnimator anim = ObjectAnimator.ofInt(progress, "progress", 100, 0);
+        anim.setInterpolator(new DecelerateInterpolator());
+        anim.setDuration(1000);
+        anim.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animator) {
 
-			@Override
-			public void onAnimationEnd(Animator animator) {
-				new CountDownTimer(duration, tick) {
-					public void onTick(long millisUntilFinished) {
-						if (previousMillis == -1)
-							previousMillis = millisUntilFinished;
-						if (previousMillis - millisUntilFinished > updateTick) {
-							previousMillis = millisUntilFinished;
-							int oldProgress = progress.getProgress();
-							int newProgress = (int)((100)*(1-(float)millisUntilFinished/duration));
-							ObjectAnimator objectAnimator = ObjectAnimator.ofInt(progress, "progress", oldProgress, newProgress);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animator) {
+                new CountDownTimer(duration, tick) {
+                    public void onTick(long millisUntilFinished) {
+                        if (previousMillis == -1)
+                            previousMillis = millisUntilFinished;
+                        if (previousMillis - millisUntilFinished > updateTick) {
+                            previousMillis = millisUntilFinished;
+                            int oldProgress = progress.getProgress();
+                            int newProgress = (int)((100)*(1-(float)millisUntilFinished/duration));
+                            ObjectAnimator objectAnimator = ObjectAnimator.ofInt(progress, "progress", oldProgress, newProgress);
                             objectAnimator.setInterpolator(new DecelerateInterpolator());
                             objectAnimator.setDuration(updateTick);
                             objectAnimator.start();
-						}
-						mTimerView.setText(formatMillis(millisUntilFinished));
-					}
-					public void onFinish() {
-						mTimerView.setText("DONE");
+                        }
+                        mTimerView.setText(formatMillis(millisUntilFinished));
+                    }
+                    public void onFinish() {
+                        mTimerView.setText("DONE");
                         int oldProgress = progress.getProgress();
                         int newProgress = 100;
                         ObjectAnimator objectAnimator = ObjectAnimator.ofInt(progress, "progress", oldProgress, newProgress);
                         objectAnimator.setInterpolator(new DecelerateInterpolator());
                         objectAnimator.setDuration(updateTick);
                         objectAnimator.start();
-					}
-				}.start();
-			}
+                        mGiveUpView.setVisibility(View.GONE);
+                        done = true;
+//                        ((TextView) findViewById(R.id.giveuptext)).setText("RETURN TO HOME");
+//                        mGiveUpView.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//                                finish();
+//                            }
+//                        });
+                    }
+                }.start();
+            }
 
-			@Override
-			public void onAnimationCancel(Animator animator) {
+            @Override
+            public void onAnimationCancel(Animator animator) {
 
-			}
+            }
 
-			@Override
-			public void onAnimationRepeat(Animator animator) {
+            @Override
+            public void onAnimationRepeat(Animator animator) {
 
-			}
-		});
-		anim.start();
-	}
+            }
+        });
+        anim.start();
+    }
 
     @Override
     protected void onStart() {
@@ -170,7 +180,7 @@ public class BoostActivity extends AppCompatActivity {
 						tts.Say("It is now " + format.format(date2) + ".");
 						break;
                     case "TIME LEFT":
-                        long left = startTime.getTime() + duration - new Date().getTime();
+                        long left = startTime.getTime() + duration*60*1000 - new Date().getTime();
                         left /= 1000; // seconds
                         tts.Say("You have " + left/60 + " minutes and " + left%60 + " seconds left.");
                         break;
@@ -181,13 +191,14 @@ public class BoostActivity extends AppCompatActivity {
 			}
 		});
 		recognizer.runRecognizerSetup();
+        recognizer.setBoostActivity(this);
 	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_boost);
-		duration = getIntent().getIntExtra("Duration", 30);
+		duration = getIntent().getIntExtra("Duration", 30) * 60 * 1000;
 		progress = (ArcProgress) findViewById(R.id.progress);
 		mTimerView = (TextView) findViewById(R.id.timerView);
         mTimerView.setText(formatMillis(duration));
@@ -196,8 +207,13 @@ public class BoostActivity extends AppCompatActivity {
         mGiveUpView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(view.getContext(), "You are a shitstain, noob", Toast.LENGTH_SHORT).show();
-                finish();
+                Snackbar.make(view, "Give up this challenge?", Snackbar.LENGTH_LONG).setAction("Yes", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Toast.makeText(getApplicationContext(), "You gave up your challenge.", Toast.LENGTH_LONG).show();
+                        finish();
+                    }
+                }).show();
             }
         });
 
@@ -207,6 +223,14 @@ public class BoostActivity extends AppCompatActivity {
 
 		tts = new TTS(getApplicationContext());
 		setupSpeechListener();
+
+
+        mSpeechCardView = findViewById(R.id.speechcard);
+        mSpeechTextView = (TextView) findViewById(R.id.speechtext);
+
+        if (Build.VERSION.SDK_INT < 21)
+            startup();
+
 	}
 
 	@Override
@@ -221,6 +245,8 @@ public class BoostActivity extends AppCompatActivity {
 	@Override
 	public void onBackPressed() {
 		// Do nothing
+        if (done)
+            onBackPressed();
 	}
 
 	public static String formatMillis(long millis) {
@@ -236,5 +262,20 @@ public class BoostActivity extends AppCompatActivity {
 		super.onDestroy();
 		recognizer.cleanup();
 	}
+
+	public void onSpeechStart() {
+        mSpeechCardView.setVisibility(View.VISIBLE);
+        mSpeechCardView.setAlpha(0f);
+        mSpeechCardView.animate().alpha(1).start();
+        mSpeechTextView.setText("");
+    }
+
+    public void onSpeechPartial(String partial) {
+        mSpeechTextView.setText(partial);
+    }
+
+    public void onSpeechStop() {
+        mSpeechCardView.animate().alpha(0).start();
+    }
 
 }

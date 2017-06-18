@@ -7,6 +7,7 @@ import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.nushhacks.angelhackapp.BoostActivity;
 import com.nushhacks.angelhackapp.ListenVoice;
 import com.nushhacks.angelhackapp.TextToSpeech.TTS;
 
@@ -25,6 +26,7 @@ import edu.cmu.pocketsphinx.SpeechRecognizerSetup;
 
 public class Recognizer implements RecognitionListener {
 	private SpeechRecognizer recognizer;
+    private BoostActivity boostActivity;
 
 	/* Keyword we are looking for to activate menu */
 	private static final String KEYPHRASE = "hello";//"no what";
@@ -65,7 +67,7 @@ public class Recognizer implements RecognitionListener {
 			@Override
 			protected void onPostExecute(Exception result) {
 				if (result != null) {
-					Toast.makeText(context, "Failed to init recongnizer " + result, Toast.LENGTH_SHORT).show();
+					Toast.makeText(context, "Failed to init recognizer " + result, Toast.LENGTH_SHORT).show();
 				} else {
 					switchSpeech("wakeup");
 				}
@@ -73,7 +75,11 @@ public class Recognizer implements RecognitionListener {
 		}.execute();
 	}
 
-	/**
+    public void setBoostActivity(BoostActivity boostActivity) {
+        this.boostActivity = boostActivity;
+    }
+
+    /**
 	 * Initialize the recognizer with the models and stuff
 	 *
 	 * @param assetsDir
@@ -102,6 +108,7 @@ public class Recognizer implements RecognitionListener {
 
 	@Override
 	public void onBeginningOfSpeech() {
+        boostActivity.onSpeechStart();
 	}
 
 	@Override
@@ -132,10 +139,12 @@ public class Recognizer implements RecognitionListener {
 		String text = hypothesis.getHypstr();
 		Log.d("Current Partial", text);
 		//speechProcessor.f(text);
+        boostActivity.onSpeechPartial(text);
 	}
 
 	@Override
 	public void onResult(Hypothesis hypothesis) {
+        boostActivity.onSpeechStop();
 		if(hypothesis == null) {
 			switchSpeech(recognizer.getSearchName());
 			return;
@@ -159,6 +168,7 @@ public class Recognizer implements RecognitionListener {
 
 	@Override
 	public void onTimeout() {
+        boostActivity.onSpeechStop();
 		Log.i("Current Text", "Timeout");
 		tts.Say("Bye for now");
 		runRecognizerSetup();

@@ -97,7 +97,8 @@
                 <ImageView
                     android:layout_gravity="end|right"
                     android:padding="16dp"
-                    android:src="@drawable/plus"
+                    android:tint="@color/colorGrey"
+                    android:src="@drawable/materialplus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:onClick="addNewSubtask"

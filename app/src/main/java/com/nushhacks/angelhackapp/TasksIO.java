@@ -110,6 +110,45 @@ public class TasksIO {
 
     }
 
+    //TODO: Not tested yet
+    public static void removeTasksFromFile(String name, Context ctx) {
+        if(!checkNameExist(name, ctx)) return;
+        JSONArray ja = getAllFromFile(ctx);
+        JSONArray newArray = new JSONArray();
+
+        if(ja!=null) {
+            try {
+
+                for(int i = 0; i < ja.length(); i++){
+                JSONObject curJO = (JSONObject)ja.get(i);
+                    if (!curJO.getString("name").equals(name)){
+                        newArray.put(i);
+                    }
+            }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        else{
+            return;
+        }
+
+        File curFile = new File(ctx.getFilesDir().getAbsolutePath() + "/" + FILE_NAME + ".json");
+
+        try {
+            Log.d("mainmain", newArray.toString());
+            OutputStreamWriter outputStream = new OutputStreamWriter(new FileOutputStream(curFile));
+            outputStream.write(newArray.toString());
+            outputStream.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     public static JSONArray getAllFromFile(Context ctx) {
         //File f = aca.getFilesDir();
         StringBuilder result = new StringBuilder();
@@ -135,27 +174,6 @@ public class TasksIO {
     }
 
     public static JSONObject getFromFile(String name, AppCompatActivity aca) {
-        //File f = aca.getFilesDir();
-        /*StringBuilder result = new StringBuilder();
-        File curFile = new File(aca.getFilesDir().getAbsolutePath() + "/" + FILE_NAME + ".json");
-
-        try {
-            InputStream inputStream = new FileInputStream(curFile);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                result.append(line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            return new JSONObject(result.toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;*/
 
         JSONArray ja = getAllFromFile(aca);
         if(ja == null) return null;
@@ -168,7 +186,6 @@ public class TasksIO {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
         }
         return null;
     }

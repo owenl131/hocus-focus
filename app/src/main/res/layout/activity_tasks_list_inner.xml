@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <LinearLayout
+        android:background="@color/colorBackground"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -14,9 +15,33 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content">
             <LinearLayout
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_margin="16dp">
+                <ImageView
+                    android:padding="8dp"
+                    android:background="#22FFFFFF"
+                    android:tint="#BBFFFFFF"
+                    android:src="@drawable/plan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:background="#55000000"
+                    android:padding="8dp"
+                    android:hint="Plan"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/dMinorPlanText" />
+            </LinearLayout>
+            <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_margin="16dp"
+                android:layout_marginTop="0dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginBottom="16dp"
                 android:layout_height="wrap_content">
                 <ImageView
                     android:padding="8dp"
@@ -36,30 +61,6 @@
                     android:id="@+id/dMinorDurText"/>
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                android:orientation="horizontal"
-                android:layout_marginTop="0dp"
-                android:layout_marginRight="16dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginBottom="16dp">
-                <ImageView
-                    android:padding="8dp"
-                    android:background="#22FFFFFF"
-                    android:tint="#BBFFFFFF"
-                    android:src="@drawable/plan"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <EditText
-                    android:background="#55000000"
-                    android:padding="8dp"
-                    android:hint="Plan"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/dMinorPlanText" />
-            </LinearLayout>
         </LinearLayout>
         <ImageView
             android:id="@+id/cancel"

@@ -14,7 +14,7 @@
         android:layout_margin="16dp"
         android:text="Tasks"
         android:textColor="@color/colorGrey"
-        android:textSize="24sp" />
+        android:textSize="20sp" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/dustbin"
